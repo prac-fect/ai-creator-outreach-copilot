@@ -1,666 +1,1360 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Creator Outreach Copilot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --blue:#0C447C;--blue-light:#E6F1FB;--blue-mid:#378ADD;
-  --teal:#085041;--teal-light:#E1F5EE;--teal-mid:#1D9E75;
-  --amber-light:#FEF3E2;--amber:#92400E;
-  --red-light:#FEE2E2;--red:#991B1B;
-  --gray:#F5F5F3;--card:#fff;
-  --border:#E5E4DF;--border-strong:#C9C8C2;
-  --text:#1A1A18;--muted:#6B6A65;--hint:#9B9A96;
-  --r:8px;--rl:12px;--rxl:16px;
+  --bg:#0f0f0f;--bg2:#161616;--bg3:#1e1e1e;--bg4:#242424;
+  --border:#2a2a2a;--border2:#383838;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#555;
+  --accent:#7c6af7;--accent2:#5b4de0;--accent-bg:rgba(124,106,247,0.1);
+  --green:#22c55e;--green-bg:rgba(34,197,94,0.1);
+  --amber:#f59e0b;--amber-bg:rgba(245,158,11,0.1);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.1);
+  --teal:#2dd4bf;
+  --radius:10px;--radius-sm:6px;
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--gray);color:var(--text);min-height:100vh;padding:2rem 1rem}
-.wrap{max-width:740px;margin:0 auto}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6}
+.app{max-width:880px;margin:0 auto;padding:40px 24px 60px}
 
-/* Header */
-.hdr{margin-bottom:1.75rem}
-.hdr h1{font-size:21px;font-weight:700;margin-bottom:5px}
-.hdr p{font-size:13px;color:var(--muted);line-height:1.55}
-.tags{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
-.tag{font-size:11px;padding:3px 10px;border-radius:20px;border:0.5px solid var(--border-strong);color:var(--muted)}
+/* ── Header ── */
+.header{margin-bottom:36px}
+.header-top{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.logo{width:38px;height:38px;background:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.title{font-size:24px;font-weight:600;letter-spacing:-0.6px}
+.subtitle{color:var(--text2);font-size:13px;margin-left:50px;margin-bottom:10px}
+.tags{display:flex;gap:7px;margin-left:50px;flex-wrap:wrap}
+.tag{font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid var(--border2);color:var(--text3)}
+.tag.live{border-color:rgba(124,106,247,0.4);color:var(--accent);background:var(--accent-bg)}
 
-/* Mode bar */
-.mode-bar{display:grid;grid-template-columns:1fr 1fr;background:var(--card);border:0.5px solid var(--border);border-radius:var(--rl);padding:4px;gap:4px;margin-bottom:1.5rem}
-.mode-btn{padding:9px;border-radius:var(--r);border:none;background:transparent;font-size:13px;cursor:pointer;color:var(--muted);transition:all .15s;font-family:inherit;font-weight:400}
-.mode-btn.on{background:var(--blue);color:#fff;font-weight:500}
+/* ── API Key ── */
+.api-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.api-icon{font-size:15px;flex-shrink:0}
+.api-input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:0.4px}
+.api-input::placeholder{color:var(--text3)}
+.api-hint{font-size:11px;color:var(--text3);margin-left:50px;margin-bottom:16px;line-height:1.5}
+.api-hint a{color:var(--accent);text-decoration:none}
+.api-hint a:hover{text-decoration:underline}
+.api-status{font-size:11px;padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.api-status.ok{background:var(--green-bg);color:var(--green)}
+.api-status.bad{background:var(--amber-bg);color:var(--amber)}
+.api-status.none{background:var(--bg3);color:var(--text3);border:1px solid var(--border)}
 
-/* Demo banner */
-.demo-banner{background:var(--card);border:0.5px solid var(--border);border-radius:var(--rl);padding:11px 15px;margin-bottom:1.5rem;display:flex;align-items:center;gap:10px}
-.demo-dot{width:8px;height:8px;border-radius:50%;background:var(--teal-mid);flex-shrink:0}
-.demo-text{font-size:12px;color:var(--muted);line-height:1.5}
-.demo-text strong{color:var(--text)}
+/* ── Mode Toggle ── */
+.mode-toggle{display:flex;gap:6px;margin-bottom:24px;background:var(--bg2);border-radius:var(--radius);padding:4px;border:1px solid var(--border)}
+.mode-btn{flex:1;padding:9px 12px;border-radius:8px;border:none;background:none;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;transition:all 0.15s}
+.mode-btn.active{background:var(--bg4);color:var(--text)}
 
-/* Preset grid */
-.preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem}
-@media(max-width:540px){.preset-grid{grid-template-columns:1fr}}
-.pc{background:var(--card);border:0.5px solid var(--border);border-radius:var(--rl);padding:14px;cursor:pointer;transition:all .15s}
-.pc:hover{border-color:var(--blue-mid);transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.07)}
-.pc.sel{border-color:var(--blue-mid);background:var(--blue-light)}
-.pc-pri{font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;display:inline-block;margin-bottom:9px}
-.ph{background:var(--teal-light);color:var(--teal)}
-.pm{background:var(--amber-light);color:var(--amber)}
-.pl{background:var(--red-light);color:var(--red)}
-.pc-name{font-size:14px;font-weight:600;margin-bottom:4px}
-.pc-meta{font-size:12px;color:var(--muted);line-height:1.5}
-.pc-score{font-size:24px;font-weight:700;margin-top:9px;line-height:1}
-.pc-score span{font-size:13px;font-weight:400;color:var(--hint)}
-.hint{font-size:12px;color:var(--hint);text-align:center;margin-bottom:1rem}
+/* ── Preset Cards ── */
+.preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.preset-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:all 0.15s}
+.preset-card:hover{border-color:var(--border2);background:var(--bg3)}
+.preset-card.selected{border-color:var(--accent);background:var(--accent-bg)}
+.p-priority{font-size:10px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px}
+.p-priority.high{color:var(--green)}
+.p-priority.mid{color:var(--amber)}
+.p-priority.low{color:var(--text3)}
+.p-handle{font-size:14px;font-weight:600;margin-bottom:4px}
+.p-meta{font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.5}
+.p-score{font-size:22px;font-weight:600;font-family:'DM Mono',monospace;color:var(--accent)}
 
-/* Step bar */
-.step-bar{display:flex;align-items:center;margin-bottom:1.5rem}
-.step{display:flex;align-items:center;gap:7px;flex:1}
-.sn{width:24px;height:24px;border-radius:50%;border:0.5px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--muted);flex-shrink:0;background:var(--card);transition:all .2s}
-.sn.done{background:var(--teal-mid);border-color:var(--teal-mid);color:#fff}
-.sn.active{background:var(--blue-light);border-color:var(--blue-mid);color:var(--blue)}
-.sl{font-size:12px;color:var(--muted)}
-.sl.active{color:var(--text);font-weight:500}
-.step-line{height:.5px;flex:1;background:var(--border);margin:0 8px}
+/* ── Stepper ── */
+.stepper{display:flex;margin-bottom:20px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.step{flex:1;padding:10px;text-align:center;font-size:12px;font-weight:500;color:var(--text3);border-right:1px solid var(--border);transition:all 0.15s}
+.step:last-child{border-right:none}
+.step.active{background:var(--accent-bg);color:var(--accent)}
+.step.done{color:var(--text2)}
+.step-num{display:block;font-size:10px;font-family:'DM Mono',monospace;margin-bottom:2px}
 
-/* Panel */
-.panel{display:none}.panel.active{display:block}
+/* ── Form ── */
+.section-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.section-label{font-size:13px;font-weight:600;margin-bottom:3px}
+.section-hint{font-size:12px;color:var(--text3);margin-bottom:18px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:4px}
+.form-full{grid-column:1/-1}
+.field{display:flex;flex-direction:column;gap:5px}
+label{font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3)}
+input,select,textarea{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 11px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color 0.15s;width:100%;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+select{background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 10px center;background-size:16px;padding-right:32px}
+select option{background:var(--bg3)}
+textarea{resize:vertical;min-height:76px}
+.sep{height:1px;background:var(--border);margin:16px 0}
+.radio-group{display:flex;gap:8px;flex-wrap:wrap}
+.radio-btn{padding:7px 14px;border:1px solid var(--border);border-radius:20px;cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);transition:all 0.15s;background:var(--bg3);user-select:none}
+.radio-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+.btn-row{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:20px}
+.btn-back{background:none;border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 16px;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;transition:all 0.15s}
+.btn-back:hover{border-color:var(--border2);color:var(--text)}
+.btn-primary{background:var(--accent);border:none;border-radius:var(--radius-sm);padding:10px 22px;color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;transition:background 0.15s;display:flex;align-items:center;gap:8px}
+.btn-primary:hover{background:var(--accent2)}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed}
 
-/* Card */
-.card{background:var(--card);border:.5px solid var(--border);border-radius:var(--rl);padding:16px;margin-bottom:12px}
-.ctitle{font-size:13px;font-weight:600;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:7px}
-.lb{font-size:11px;padding:2px 9px;border-radius:20px;font-weight:500}
-.lb-b{background:var(--blue-light);color:var(--blue)}
-.lb-t{background:var(--teal-light);color:var(--teal)}
-.slbl{font-size:11px;font-weight:500;color:var(--hint);letter-spacing:.5px;text-transform:uppercase;margin-bottom:9px;margin-top:2px}
-.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px}
-.fg.one{grid-template-columns:1fr}
-@media(max-width:500px){.fg{grid-template-columns:1fr}}
-.field{display:flex;flex-direction:column;gap:4px}
-.field label{font-size:12px;color:var(--muted)}
-.field input,.field select{font-size:13px;padding:7px 10px;border:.5px solid var(--border-strong);border-radius:var(--r);outline:none;background:#fff;color:var(--text);width:100%;font-family:inherit;transition:border-color .15s}
-.field input:focus,.field select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 2px var(--blue-light)}
+/* ── Results ── */
+.result-panel{display:flex;flex-direction:column;gap:14px}
+.score-hero{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:22px;display:flex;align-items:center;gap:22px}
+.score-ring{width:72px;height:72px;flex-shrink:0}
+.score-info{flex:1}
+.score-value{font-size:34px;font-weight:600;font-family:'DM Mono',monospace;line-height:1}
+.score-sub{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;margin-top:3px}
+.score-tags{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.stag{font-size:11px;padding:3px 9px;border-radius:20px}
+.stag.match{background:var(--green-bg);color:var(--green)}
+.stag.warn{background:var(--amber-bg);color:var(--amber)}
+.stag.miss{background:var(--red-bg);color:var(--red)}
 
-/* Buttons */
-.brow{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
-.btn{padding:8px 18px;border-radius:var(--r);font-size:13px;cursor:pointer;border:.5px solid var(--border-strong);background:transparent;color:var(--muted);font-family:inherit;transition:all .15s}
-.btn:hover{background:var(--gray)}
-.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:500}
-.btn.pri:hover{background:#185FA5}
-.btn.sm{padding:5px 13px;font-size:12px}
+.rcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.rcard-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.rcard-title{font-size:11px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:var(--text3)}
+.rcard-body{padding:18px}
+.rcard-body p{font-size:13px;line-height:1.75;color:var(--text2);margin-bottom:10px}
+.rcard-body p:last-child{margin-bottom:0}
 
-/* Result card */
-.rc{background:var(--card);border:.5px solid var(--border);border-radius:var(--rxl);overflow:hidden;margin-bottom:14px}
-.rc-head{padding:15px 16px;border-bottom:.5px solid var(--border);display:flex;align-items:center;gap:12px}
-.rc-avatar{width:40px;height:40px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
-.rc-info{flex:1;min-width:0}
-.rc-name{font-size:15px;font-weight:600;margin-bottom:3px}
-.rc-meta{font-size:12px;color:var(--muted)}
-.pri-badge{font-size:12px;font-weight:600;padding:5px 14px;border-radius:20px;white-space:nowrap}
+.email-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap;font-family:'DM Sans',sans-serif}
+.copy-btn{font-size:11px;padding:5px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.copy-btn:hover{border-color:var(--border2);color:var(--text)}
+.email-subject{font-size:12px;color:var(--text3);margin-bottom:10px;font-family:'DM Mono',monospace}
 
-/* Scores */
-.sg{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:.5px solid var(--border)}
-@media(max-width:480px){.sg{grid-template-columns:repeat(2,1fr)}}
-.si{padding:13px 8px;text-align:center;border-right:.5px solid var(--border)}
-.si:last-child{border-right:none}
-.sv{font-size:23px;font-weight:700;line-height:1}
-.sd{font-size:13px;font-weight:400;color:var(--hint)}
-.sl2{font-size:11px;color:var(--hint);margin-top:4px;line-height:1.3}
-.sbw{height:3px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}
-.sb{height:100%;border-radius:2px;transition:width .9s ease}
+/* ── Loading ── */
+.loading-wrap{padding:40px;text-align:center}
+.spinner{width:20px;height:20px;border:2px solid rgba(124,106,247,0.3);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;color:var(--text2);margin-top:14px}
+.loading-sub{font-size:12px;color:var(--text3);margin-top:4px}
 
-/* Analysis */
-.ab{padding:15px 16px}
-.as{margin-bottom:12px}
-.as:last-child{margin-bottom:0}
-.at{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px}
-.ax{font-size:13px;color:var(--text);line-height:1.65}
-.dv{height:.5px;background:var(--border);margin:12px 0}
-.conc{background:linear-gradient(135deg,var(--teal-light),#f0faf6);border-radius:var(--r);padding:11px 14px;font-size:13px;font-weight:500;color:var(--teal);line-height:1.6;margin-top:13px}
+/* ── Error ── */
+.error-msg{background:var(--red-bg);border:1px solid rgba(239,68,68,0.25);border-radius:var(--radius-sm);padding:12px 16px;color:var(--red);font-size:13px;line-height:1.6}
 
-/* Email box */
-.email-box{background:var(--gray);border:.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-top:8px}
-.email-subject{padding:9px 12px;border-bottom:.5px solid var(--border);font-size:12px;color:var(--muted);display:flex;align-items:baseline;gap:6px}
-.email-subject strong{color:var(--text);font-size:12px;flex-shrink:0}
-.email-subject span{font-size:13px;color:var(--text);font-weight:500}
-.email-body{padding:12px;font-size:13px;color:var(--text);line-height:1.7;white-space:pre-line;max-height:260px;overflow-y:auto}
-.copy-row{padding:8px 12px;border-top:.5px solid var(--border);display:flex;align-items:center;gap:8px}
-.copy-hint{font-size:11px;color:var(--hint);flex:1}
+/* ── Footer ── */
+.footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:gap}
+.footer span{font-size:11px;color:var(--text3)}
 
-/* Loading */
-.loading{padding:3rem;text-align:center}
-.dots{display:inline-flex;gap:6px;margin-bottom:12px}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--blue-mid);animation:pp 1.2s ease-in-out infinite}
-.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
-@keyframes pp{0%,80%,100%{opacity:.3;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
-.lprog{width:180px;height:3px;background:var(--border);border-radius:2px;margin:12px auto 0;overflow:hidden}
-.lbar{height:100%;background:var(--blue-mid);border-radius:2px;animation:lp 2.2s ease forwards}
-@keyframes lp{from{width:0}to{width:88%}}
-.ltxt{font-size:13px;color:var(--muted);margin-top:0}
+/* ── Batch Mode ── */
+.filter-btn{padding:6px 12px;border:1px solid var(--border);border-radius:20px;cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);background:var(--bg2);font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.filter-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+.batch-table{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.batch-thead{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1.5fr 1fr;gap:0;border-bottom:1px solid var(--border);padding:10px 16px;font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3)}
+.batch-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1.5fr 1fr;gap:0;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.12s;align-items:center}
+.batch-row:last-child{border-bottom:none}
+.batch-row:hover{background:var(--bg3)}
+.batch-row.expanded{background:var(--accent-bg)}
+.batch-cell{font-size:13px;color:var(--text)}
+.batch-cell.dim{color:var(--text2);font-size:12px}
+.priority-pill{display:inline-block;font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;letter-spacing:0.5px}
+.priority-pill.high{background:var(--green-bg);color:var(--green)}
+.priority-pill.mid{background:var(--amber-bg);color:var(--amber)}
+.priority-pill.low{background:var(--red-bg);color:var(--red)}
+.drawer-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);margin-top:6px;overflow:hidden}
+.email-card{background:var(--bg2);border:1px solid rgba(34,197,94,0.25);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
+.email-card-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.email-card-body{padding:16px}
 
-.footer{text-align:center;margin-top:2rem;font-size:11px;color:var(--hint)}
+/* ── Responsive ── */
+@media(max-width:620px){
+  .preset-grid{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+  .score-hero{flex-direction:column;align-items:flex-start;gap:14px}
+  .app{padding:24px 16px 48px}
+}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="app">
 
 <!-- Header -->
-<div class="hdr">
-  <h1>AI Creator Outreach Copilot</h1>
-  <p>输入甲方产品画像与 TikTok 达人数据，输出匹配评分、合作分析与个性化外联邮件</p>
+<div class="header">
+  <div class="header-top">
+    <div class="logo">✦</div>
+    <div class="title">AI Creator Outreach Copilot</div>
+  </div>
+  <div class="subtitle">输入甲方产品画像与 TikTok 达人数据，输出匹配评分、合作分析与个性化外联邮件</div>
   <div class="tags">
-    <span class="tag">Prompt Engineering</span>
+    <span class="tag live">Claude API 驱动</span>
     <span class="tag">TikTok Creator Matching</span>
     <span class="tag">跨境电商</span>
-    <span class="tag">Zero-cost Demo</span>
+    <span class="tag">Prompt Engineering</span>
   </div>
 </div>
 
-<!-- Mode Switch -->
-<div class="mode-bar">
-  <button class="mode-btn on" id="mbPreset" onclick="setMode('preset')">📋 预设案例演示</button>
-  <button class="mode-btn" id="mbCustom" onclick="setMode('custom')">✏️ 自定义输入</button>
+<!-- API Key -->
+<div class="api-section">
+  <span class="api-icon">🔑</span>
+  <input class="api-input" type="password" id="apiKeyInput"
+    placeholder="输入 Anthropic API Key（sk-ant-...）以启用真实 AI 输出" autocomplete="off">
+  <span class="api-status none" id="apiStatus">未配置</span>
+</div>
+<div class="api-hint">
+  没有 API Key？前往 <a href="https://console.anthropic.com/keys" target="_blank">console.anthropic.com</a> 免费获取 ·
+  Key 仅在本地使用，不经过任何服务器
 </div>
 
-<!-- Demo banner -->
-<div class="demo-banner">
-  <div class="demo-dot"></div>
-  <div class="demo-text"><strong>Demo 模式</strong> · 无需 API Key，不调用外部接口 · 内置规则引擎与模拟 AI 输出，适合简历展示与面试演示</div>
+<!-- Mode Toggle -->
+<div class="mode-toggle">
+  <button class="mode-btn active" id="btnPreset" onclick="switchMode('preset')">📋 预设案例演示</button>
+  <button class="mode-btn" id="btnCustom" onclick="switchMode('custom')">✏️ 自定义输入</button>
+  <button class="mode-btn" id="btnBatch" onclick="switchMode('batch')">⚡ 批量上传分析</button>
 </div>
 
-<!-- ═══ PRESET MODE ═══ -->
-<div id="modePreset">
-  <p class="hint">选择一个达人案例，查看 AI 匹配分析与外联邮件</p>
+<!-- ═══════════════ PRESET MODE ═══════════════ -->
+<div id="presetMode">
   <div class="preset-grid">
-    <div class="pc" id="pc0" onclick="selectPreset(0)">
-      <span class="pc-pri ph">优先级：高</span>
-      <div class="pc-name">@beautybyella</div>
-      <div class="pc-meta">85万粉 · ER 4.8%<br>护肤 Routine · 美国为主</div>
-      <div class="pc-score" style="color:#1D9E75">8.6<span>/10</span></div>
+    <div class="preset-card selected" id="pc0" onclick="selectPreset(0)">
+      <div class="p-priority high">优先级：高</div>
+      <div class="p-handle">@beautybyella</div>
+      <div class="p-meta">85万粉 · ER 4.8%<br>护肤 Routine · 美国为主</div>
+      <div class="p-score">8.6<span style="font-size:13px;color:var(--text3)">/10</span></div>
     </div>
-    <div class="pc" id="pc1" onclick="selectPreset(1)">
-      <span class="pc-pri pm">优先级：中</span>
-      <div class="pc-name">@lifewithkate</div>
-      <div class="pc-meta">42万粉 · ER 3.1%<br>生活方式 · 英国为主</div>
-      <div class="pc-score" style="color:#378ADD">6.2<span>/10</span></div>
+    <div class="preset-card" id="pc1" onclick="selectPreset(1)">
+      <div class="p-priority mid">优先级：中</div>
+      <div class="p-handle">@lifewithkate</div>
+      <div class="p-meta">42万粉 · ER 3.1%<br>生活方式 · 英国为主</div>
+      <div class="p-score">6.2<span style="font-size:13px;color:var(--text3)">/10</span></div>
     </div>
-    <div class="pc" id="pc2" onclick="selectPreset(2)">
-      <span class="pc-pri pl">优先级：低</span>
-      <div class="pc-name">@gamerdave99</div>
-      <div class="pc-meta">120万粉 · ER 2.3%<br>游戏娱乐 · 多国混合</div>
-      <div class="pc-score" style="color:#E24B4A">3.4<span>/10</span></div>
+    <div class="preset-card" id="pc2" onclick="selectPreset(2)">
+      <div class="p-priority low">优先级：低</div>
+      <div class="p-handle">@gamerdave99</div>
+      <div class="p-meta">120万粉 · ER 2.3%<br>游戏娱乐 · 多国混合</div>
+      <div class="p-score">3.4<span style="font-size:13px;color:var(--text3)">/10</span></div>
     </div>
   </div>
-  <div id="preset-result"></div>
+  <div id="presetResult"></div>
 </div>
 
-<!-- ═══ CUSTOM MODE ═══ -->
-<div id="modeCustom" style="display:none">
-  <div class="step-bar">
-    <div class="step"><div class="sn active" id="sn1">1</div><span class="sl active" id="sl1">产品画像</span></div>
-    <div class="step-line"></div>
-    <div class="step"><div class="sn" id="sn2">2</div><span class="sl" id="sl2">达人数据</span></div>
-    <div class="step-line"></div>
-    <div class="step"><div class="sn" id="sn3">3</div><span class="sl" id="sl3">AI 评估结果</span></div>
+<!-- ═══════════════ CUSTOM MODE ═══════════════ -->
+<div id="customMode" style="display:none">
+  <div class="stepper">
+    <div class="step active" id="step1"><span class="step-num">01</span>产品画像</div>
+    <div class="step" id="step2"><span class="step-num">02</span>达人数据</div>
+    <div class="step" id="step3"><span class="step-num">03</span>AI 评估</div>
   </div>
 
-  <!-- Step 1 -->
-  <div class="panel active" id="panel1">
-    <div class="card">
-      <div class="ctitle"><span class="lb lb-b">Layer 1</span> 甲方产品画像</div>
-      <p class="slbl">产品基本信息</p>
-      <div class="fg">
-        <div class="field"><label>产品名称</label><input id="pname" placeholder="如：Glow Serum 精华液"></div>
-        <div class="field"><label>品类</label>
-          <select id="pcat">
-            <option value="">请选择</option>
-            <option value="skincare">护肤 / Skincare</option>
-            <option value="makeup">彩妆 / Makeup</option>
-            <option value="home">家居 / Home Decor</option>
-            <option value="tech">3C 数码</option>
-            <option value="sports">运动户外</option>
-            <option value="food">食品饮料</option>
-            <option value="fashion">时尚配饰</option>
-            <option value="pet">宠物用品</option>
-          </select>
-        </div>
-        <div class="field"><label>客单价（美元）</label><input id="pprice" type="number" placeholder="如：35"></div>
-        <div class="field"><label>目标市场</label>
-          <select id="pmarket">
-            <option value="">请选择</option>
-            <option value="us">美国</option>
-            <option value="uk">英国</option>
-            <option value="sea">东南亚</option>
-            <option value="eu">欧洲</option>
-            <option value="global">全球</option>
-          </select>
-        </div>
+  <!-- Step 1: Product -->
+  <div id="formStep1" class="section-card">
+    <div class="section-label">甲方产品画像</div>
+    <div class="section-hint">填写产品基本信息，用于与达人受众做匹配分析</div>
+    <div class="form-grid">
+      <div class="field">
+        <label>产品名称</label>
+        <input type="text" id="f_pname" placeholder="例：GlowUp 玻尿酸精华">
       </div>
-      <p class="slbl">目标用户</p>
-      <div class="fg">
-        <div class="field"><label>核心年龄段</label>
-          <select id="page">
-            <option value="">请选择</option>
-            <option value="13-17">13–17</option><option value="18-24">18–24</option>
-            <option value="25-34">25–34</option><option value="35-44">35–44</option><option value="45+">45+</option>
-          </select>
-        </div>
-        <div class="field"><label>性别偏向</label>
-          <select id="pgender">
-            <option value="">请选择</option>
-            <option value="female">女性为主</option><option value="male">男性为主</option><option value="all">不限</option>
-          </select>
-        </div>
-        <div class="field"><label>兴趣标签（逗号分隔）</label><input id="ptags" placeholder="如：Skincare, Beauty, Wellness"></div>
-        <div class="field"><label>消费场景</label><input id="pscene" placeholder="如：日常自用、节日礼品"></div>
+      <div class="field">
+        <label>品类</label>
+        <select id="f_pcat">
+          <option value="">请选择</option>
+          <option>护肤 / Skincare</option>
+          <option>彩妆 / Makeup</option>
+          <option>家居 / Home Decor</option>
+          <option>3C 数码</option>
+          <option>运动户外</option>
+          <option>食品饮料</option>
+          <option>时尚配饰</option>
+          <option>宠物用品</option>
+        </select>
       </div>
-      <p class="slbl">产品卖点</p>
-      <div class="fg one">
-        <div class="field"><label>核心卖点关键词（3–5 个）</label><input id="pusp" placeholder="如：成分党、高性价比、纯素配方、颜值系"></div>
+      <div class="field">
+        <label>客单价（美元）</label>
+        <input type="number" id="f_price" placeholder="例：49">
       </div>
-    </div>
-    <div class="brow"><button class="btn pri" onclick="toStep2()">下一步：填写达人数据 →</button></div>
-  </div>
-
-  <!-- Step 2 -->
-  <div class="panel" id="panel2">
-    <div class="card">
-      <div class="ctitle"><span class="lb lb-t">Layer 2</span> TikTok 达人数据</div>
-      <p class="slbl">基础数据</p>
-      <div class="fg">
-        <div class="field"><label>TikTok 用户名</label><input id="kname" placeholder="如：@glowwithsarah"></div>
-        <div class="field"><label>粉丝量（万）</label><input id="kfans" type="number" placeholder="如：45"></div>
-        <div class="field"><label>近 30 天 Engagement Rate (%)</label><input id="ker" type="number" step="0.1" placeholder="如：3.2"></div>
-        <div class="field"><label>近 30 天平均播放量（万）</label><input id="kviews" type="number" placeholder="如：12"></div>
+      <div class="field">
+        <label>目标市场</label>
+        <select id="f_market">
+          <option value="">请选择</option>
+          <option>美国</option>
+          <option>英国</option>
+          <option>东南亚</option>
+          <option>欧洲</option>
+          <option>全球</option>
+        </select>
       </div>
-      <p class="slbl">受众画像</p>
-      <div class="fg">
-        <div class="field"><label>粉丝主要年龄段</label>
-          <select id="kage">
-            <option value="">请选择</option>
-            <option value="13-17">13–17 为主</option><option value="18-24">18–24 为主</option>
-            <option value="25-34">25–34 为主</option><option value="35-44">35–44 为主</option><option value="45+">45+ 为主</option>
-          </select>
-        </div>
-        <div class="field"><label>粉丝性别比</label><input id="kgender" placeholder="如：女 75% / 男 25%"></div>
-        <div class="field"><label>粉丝国家 Top 3</label><input id="kcountry" placeholder="如：US 60% / UK 15% / CA 10%"></div>
-        <div class="field"><label>TikTok Shop 开通情况</label>
-          <select id="kshop">
-            <option value="">请选择</option>
-            <option value="gmv">已开通，有带货记录</option>
-            <option value="open">已开通，暂无带货</option>
-            <option value="no">未开通</option>
-          </select>
-        </div>
+      <div class="field">
+        <label>目标年龄段</label>
+        <select id="f_age">
+          <option value="">请选择</option>
+          <option>13–17</option>
+          <option>18–24</option>
+          <option>25–34</option>
+          <option>35–44</option>
+          <option>45+</option>
+        </select>
       </div>
-      <p class="slbl">内容信息</p>
-      <div class="fg">
-        <div class="field"><label>内容垂类</label>
-          <select id="kcategory">
-            <option value="">请选择</option>
-            <option value="skincare">护肤 / Skincare</option>
-            <option value="makeup">彩妆 / Makeup</option>
-            <option value="lifestyle">生活方式 / Lifestyle</option>
-            <option value="fashion">时尚 / Fashion</option>
-            <option value="fitness">健身 / Fitness</option>
-            <option value="food">美食 / Food</option>
-            <option value="tech">科技 / Tech</option>
-            <option value="gaming">游戏 / Gaming</option>
-            <option value="home">家居 / Home</option>
-          </select>
-        </div>
-        <div class="field"><label>内容风格</label>
-          <select id="kstyle">
-            <option value="">请选择</option>
-            <option value="review">真实测评型</option>
-            <option value="vlog">生活记录 Vlog 型</option>
-            <option value="tutorial">教程 Tutorial 型</option>
-            <option value="entertainment">搞笑娱乐型</option>
-            <option value="expert">专业知识型</option>
-          </select>
-        </div>
-        <div class="field"><label>近期合作品牌类型</label><input id="kcollab" placeholder="如：美妆品牌、无合作记录"></div>
-        <div class="field"><label>粉丝兴趣标签 Top 3</label><input id="ktags" placeholder="如：Beauty, Skincare, Lifestyle"></div>
+      <div class="field">
+        <label>性别偏向</label>
+        <select id="f_gender">
+          <option value="">请选择</option>
+          <option>女性为主</option>
+          <option>男性为主</option>
+          <option>不限</option>
+        </select>
       </div>
-      <p class="slbl">外联邮件设置</p>
-      <div class="fg">
-        <div class="field"><label>邮件语气</label>
-          <select id="etone">
-            <option value="sincere">自然真诚型</option>
-            <option value="professional">专业商务型</option>
-            <option value="casual">轻松友好型</option>
-            <option value="value">强利益点型</option>
-          </select>
-        </div>
-        <div class="field"><label>合作目标</label>
-          <select id="egoal">
-            <option value="inquiry">获取报价与合作意向</option>
-            <option value="sample">邀请免费寄样测评</option>
-            <option value="paid">邀请付费短视频合作</option>
-            <option value="shop">邀请 TikTok Shop 带货</option>
-          </select>
-        </div>
+      <div class="field form-full">
+        <label>核心卖点（3–5 个，逗号分隔）</label>
+        <input type="text" id="f_usp" placeholder="例：天然成分、无香精、皮肤科测试认证、敏感肌可用">
+      </div>
+      <div class="field form-full">
+        <label>消费场景</label>
+        <textarea id="f_scene" placeholder="例：睡前护肤，适合追求轻护肤的都市女性"></textarea>
       </div>
     </div>
-    <div class="brow">
-      <button class="btn" onclick="toStep1()">← 返回修改产品画像</button>
-      <button class="btn pri" onclick="runAnalysis()">✦ 生成 AI 评估报告</button>
+    <div class="btn-row">
+      <span></span>
+      <button class="btn-primary" onclick="goStep(2)">下一步：填写达人数据 →</button>
     </div>
   </div>
 
-  <!-- Step 3 -->
-  <div class="panel" id="panel3">
-    <div id="custom-result"></div>
-    <div class="brow" style="margin-top:4px">
-      <button class="btn" onclick="toStep2()">← 换一个达人</button>
-      <button class="btn" onclick="toStep1()">重新填写产品画像</button>
+  <!-- Step 2: Creator -->
+  <div id="formStep2" style="display:none" class="section-card">
+    <div class="section-label">TikTok 达人数据</div>
+    <div class="section-hint">填写达人基本数据，AI 将据此进行多维匹配评估</div>
+    <div class="form-grid">
+      <div class="field">
+        <label>TikTok 用户名</label>
+        <input type="text" id="c_handle" placeholder="@creatorname">
+      </div>
+      <div class="field">
+        <label>粉丝量（万）</label>
+        <input type="number" id="c_fans" placeholder="例：85">
+      </div>
+      <div class="field">
+        <label>近30天 Engagement Rate (%)</label>
+        <input type="number" id="c_er" placeholder="例：4.8" step="0.1">
+      </div>
+      <div class="field">
+        <label>近30天均播放量（万）</label>
+        <input type="number" id="c_views" placeholder="例：120">
+      </div>
+      <div class="field">
+        <label>粉丝主要年龄段</label>
+        <select id="c_age">
+          <option value="">请选择</option>
+          <option>13–17 为主</option>
+          <option>18–24 为主</option>
+          <option>25–34 为主</option>
+          <option>35–44 为主</option>
+          <option>45+ 为主</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>TikTok Shop 情况</label>
+        <select id="c_shop">
+          <option value="">请选择</option>
+          <option>已开通，有带货记录</option>
+          <option>已开通，暂无带货</option>
+          <option>未开通</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>内容垂类</label>
+        <select id="c_niche">
+          <option value="">请选择</option>
+          <option>护肤 / Skincare</option>
+          <option>彩妆 / Makeup</option>
+          <option>生活方式 / Lifestyle</option>
+          <option>时尚 / Fashion</option>
+          <option>健身 / Fitness</option>
+          <option>美食 / Food</option>
+          <option>科技 / Tech</option>
+          <option>游戏 / Gaming</option>
+          <option>家居 / Home</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>内容风格</label>
+        <select id="c_style">
+          <option value="">请选择</option>
+          <option>真实测评型</option>
+          <option>生活记录 Vlog 型</option>
+          <option>教程 Tutorial 型</option>
+          <option>搞笑娱乐型</option>
+          <option>专业知识型</option>
+        </select>
+      </div>
+      <div class="field form-full">
+        <label>粉丝国家 Top 3</label>
+        <input type="text" id="c_countries" placeholder="例：美国 60%、英国 15%、加拿大 10%">
+      </div>
+      <div class="field form-full">
+        <label>粉丝兴趣标签 Top 3</label>
+        <input type="text" id="c_tags" placeholder="例：护肤、美妆、生活方式">
+      </div>
+    </div>
+    <div class="sep"></div>
+    <div class="field" style="margin-bottom:14px">
+      <label>外联邮件语气</label>
+      <div class="radio-group" id="emailToneGroup">
+        <div class="radio-btn active" onclick="pick(this,'emailToneGroup','自然真诚型')">自然真诚型</div>
+        <div class="radio-btn" onclick="pick(this,'emailToneGroup','专业商务型')">专业商务型</div>
+        <div class="radio-btn" onclick="pick(this,'emailToneGroup','轻松友好型')">轻松友好型</div>
+        <div class="radio-btn" onclick="pick(this,'emailToneGroup','强利益点型')">强利益点型</div>
+      </div>
+    </div>
+    <div class="field">
+      <label>合作目标</label>
+      <div class="radio-group" id="collabGoalGroup">
+        <div class="radio-btn active" onclick="pick(this,'collabGoalGroup','获取报价与合作意向')">获取报价</div>
+        <div class="radio-btn" onclick="pick(this,'collabGoalGroup','邀请免费寄样测评')">免费寄样</div>
+        <div class="radio-btn" onclick="pick(this,'collabGoalGroup','邀请付费短视频合作')">付费合作</div>
+        <div class="radio-btn" onclick="pick(this,'collabGoalGroup','邀请 TikTok Shop 带货')">TikTok Shop</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="goStep(1)">← 返回</button>
+      <button class="btn-primary" id="generateBtn" onclick="generateReport()">
+        <span>✦ 生成 AI 评估报告</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 3: Result -->
+  <div id="formStep3" style="display:none">
+    <div id="customResult"></div>
+    <div style="margin-top:14px">
+      <button class="btn-back" onclick="resetCustom()">← 重新评估</button>
     </div>
   </div>
 </div>
 
-<div class="footer">由 Prompt Engineering 驱动 · TikTok Creator Marketplace 字段设计 · 数据本地运行，不上传服务器</div>
+<!-- ═══════════════ BATCH MODE ═══════════════ -->
+<div id="batchMode" style="display:none">
+
+  <!-- Product config -->
+  <div class="section-card" style="margin-bottom:16px">
+    <div class="section-label">甲方产品画像（批量共用）</div>
+    <div class="section-hint">所有达人将基于同一产品信息进行匹配评估</div>
+    <div class="form-grid">
+      <div class="field"><label>产品名称</label><input type="text" id="b_pname" placeholder="例：GlowUp 玻尿酸精华"></div>
+      <div class="field"><label>品类</label>
+        <select id="b_pcat"><option value="">请选择</option><option>护肤 / Skincare</option><option>彩妆 / Makeup</option><option>家居 / Home Decor</option><option>3C 数码</option><option>运动户外</option><option>食品饮料</option><option>时尚配饰</option><option>宠物用品</option></select>
+      </div>
+      <div class="field"><label>目标市场</label>
+        <select id="b_market"><option value="">请选择</option><option>美国</option><option>英国</option><option>东南亚</option><option>欧洲</option><option>全球</option></select>
+      </div>
+      <div class="field"><label>目标用户（年龄/性别）</label><input type="text" id="b_target" placeholder="例：25–34岁，女性为主"></div>
+      <div class="field form-full"><label>核心卖点</label><input type="text" id="b_usp" placeholder="例：天然成分、无香精、皮肤科认证"></div>
+    </div>
+  </div>
+
+  <!-- Upload zone -->
+  <div class="section-card" id="uploadZone" style="margin-bottom:16px">
+    <div style="text-align:center;padding:20px 0">
+      <div style="font-size:36px;margin-bottom:10px">📂</div>
+      <div style="font-weight:600;margin-bottom:6px;font-size:15px">上传达人数据 CSV</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:18px;line-height:1.8">
+        支持 CSV 格式，最多 200 行 · 拖拽文件到此处或点击上传<br>
+        字段：handle, fans_w, er, views_w, age, shop, niche, style, countries, interests
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn-primary" onclick="document.getElementById('csvFileInput').click()">📁 选择 CSV 文件</button>
+        <button class="btn-back" onclick="loadSampleCSV()">✨ 载入20条示例数据</button>
+      </div>
+      <input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="handleCSVUpload(event)">
+      <div style="margin-top:14px">
+        <a href="#" onclick="downloadTemplate();return false;" style="font-size:12px;color:var(--accent);text-decoration:none">⬇ 下载 CSV 模板</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div id="batchProgress" style="display:none;margin-bottom:16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px">
+    <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+      <span style="font-size:13px;color:var(--text2)" id="progressLabel">正在分析...</span>
+      <span style="font-size:12px;font-family:'DM Mono',monospace;color:var(--text3)" id="progressCount">0 / 0</span>
+    </div>
+    <div style="height:4px;background:var(--bg3);border-radius:2px;overflow:hidden">
+      <div id="progressBar" style="height:100%;background:var(--accent);width:0%;transition:width 0.4s ease;border-radius:2px"></div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div id="batchStats" style="display:none;margin-bottom:14px">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center">
+        <div style="font-size:24px;font-weight:600;font-family:'DM Mono',monospace" id="statTotal">0</div>
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-top:3px">总达人数</div>
+      </div>
+      <div style="background:var(--green-bg);border:1px solid rgba(34,197,94,0.2);border-radius:var(--radius);padding:14px;text-align:center">
+        <div style="font-size:24px;font-weight:600;font-family:'DM Mono',monospace;color:var(--green)" id="statHigh">0</div>
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-top:3px">高优先级</div>
+      </div>
+      <div style="background:var(--amber-bg);border:1px solid rgba(245,158,11,0.2);border-radius:var(--radius);padding:14px;text-align:center">
+        <div style="font-size:24px;font-weight:600;font-family:'DM Mono',monospace;color:var(--amber)" id="statMid">0</div>
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-top:3px">中优先级</div>
+      </div>
+      <div style="background:var(--red-bg);border:1px solid rgba(239,68,68,0.2);border-radius:var(--radius);padding:14px;text-align:center">
+        <div style="font-size:24px;font-weight:600;font-family:'DM Mono',monospace;color:var(--red)" id="statLow">0</div>
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-top:3px">低优先级</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div id="batchToolbar" style="display:none;margin-bottom:12px;display:none;align-items:center;gap:10px;flex-wrap:wrap">
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="filter-btn active" onclick="filterBatch('all',this)">全部</button>
+      <button class="filter-btn" onclick="filterBatch('高',this)">🟢 高优先级</button>
+      <button class="filter-btn" onclick="filterBatch('中',this)">🟡 中优先级</button>
+      <button class="filter-btn" onclick="filterBatch('低',this)">🔴 低优先级</button>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn-back" style="font-size:12px" onclick="exportCSV()">⬇ 导出结果 CSV</button>
+    <button class="btn-back" style="font-size:12px" onclick="resetBatch()">重新上传</button>
+  </div>
+
+  <!-- Table + Drawer -->
+  <!-- High priority email panel (auto-shown after analysis) -->
+  <div id="highEmailPanel" style="display:none;margin-bottom:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:2px">🟢 高优先级达人 · 个性化外联邮件</div>
+        <div style="font-size:12px;color:var(--text3)">以下邮件已自动生成，可直接复制发送</div>
+      </div>
+      <button class="btn-back" style="font-size:12px" onclick="copyAllHighEmails()">复制全部邮件</button>
+    </div>
+    <div id="highEmailCards"></div>
+  </div>
+
+  <!-- Full results table (all creators) -->
+  <div id="batchTable"></div>
+  <div id="batchDrawer"></div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <span>由 Claude API 驱动 · TikTok Creator Marketplace 字段设计</span>
+  <span>API Key 仅本地使用，不经过任何服务器</span>
+</div>
 </div>
 
 <script>
-// ─── Helpers ────────────────────────────────────────────────
-const g=id=>document.getElementById(id);
-const v=id=>g(id)?.value?.trim()||'';
-const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-const has=(text,arr)=>arr.some(x=>String(text||'').toLowerCase().includes(String(x).toLowerCase()));
-const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
-const bc=s=>{s=parseFloat(s);return s>=8?'#1D9E75':s>=6?'#378ADD':s>=4?'#BA7517':'#E24B4A'};
+/* ── State ── */
+let currentMode = 'preset';
+let selectedPreset = 0;
+let isGenerating = false;
+let emailTone = '自然真诚型';
+let collabGoal = '获取报价与合作意向';
 
-// ─── Mode switch ─────────────────────────────────────────────
-function setMode(m){
-  g('mbPreset').classList.toggle('on',m==='preset');
-  g('mbCustom').classList.toggle('on',m==='custom');
-  g('modePreset').style.display=m==='preset'?'block':'none';
-  g('modeCustom').style.display=m==='custom'?'block':'none';
-}
-
-// ─── Step control ────────────────────────────────────────────
-function setStep(n){
-  [1,2,3].forEach(i=>{
-    g('sn'+i).className='sn'+(i===n?' active':i<n?' done':'');
-    g('sn'+i).textContent=i<n?'✓':String(i);
-    g('sl'+i).className='sl'+(i===n?' active':'');
-    g('panel'+i).classList.toggle('active',i===n);
-  });
-}
-function toStep1(){setStep(1)}
-function toStep2(){
-  if(!v('pname')||!v('pcat')){alert('请至少填写产品名称和品类');return}
-  setStep(2);
-}
-
-// ─── Preset data ─────────────────────────────────────────────
-const PRESETS=[
+/* ── Preset data ── */
+const PRESETS = [
   {
-    name:'@beautybyella',emoji:'💄',fans:'85万',er:'4.8',views:'28万',
-    category:'护肤 Routine · GRWM · Skincare',country:'US 68% / UK 18% / CA 9%',
-    shop:'已开通，近3个月带货 GMV $12,000+',style:'真实测评型',
-    scores:{audience:9,content:9,commerce:8,total:'8.6'},priority:'高',
-    analysis:{
-      audience:'粉丝主力 18–25 岁女性，美国占 68%，与护肤品目标用户高度吻合；兴趣标签 Beauty / Skincare / Self-care 与产品品类强匹配，受众重合度极高。',
-      content:'内容以 skincare routine 和真实测评为主，产品植入自然度极高；适合做"融入早晚护肤步骤"的软广形式，种草路径清晰，用户接受度高。',
-      commerce:'TikTok Shop 已开通并有带货记录，近期 GMV 超 $12K；ER 4.8% 远高于同体量均值（行业基准约 2–3%），评论区购买意图信号明显，转化能力经验证。',
-      strategy:'首封邮件开场引用她某条 routine 视频，说明产品如何自然融入该场景；强调产品成分故事与高性价比，契合其"真实推荐"内容人设，降低广告感。',
-      suggestion:'① 融入"我的早 C 晚 A 护肤 routine"，产品作为核心步骤出镜\n② 做一期"平价替代品大测评"，将产品作为高性价比选项推荐',
-      conclusion:'强烈推荐优先外联，各维度高度匹配，预期 ROI 良好。'
-    },
-    email:{
-      subject:'Skincare collaboration idea for @beautybyella',
-      body:`Hi Ella,\n\nI came across your recent morning skincare routine video and really liked how genuine your product breakdowns feel — it's clear your audience trusts your recommendations.\n\nWe're working on Glow Serum, a lightweight vitamin C serum focused on brightening and barrier repair, priced at $35. Since your content leans toward honest skincare reviews and routine integration, I think there's a natural way to introduce it without making the video feel like an ad.\n\nWe'd love to send you a sample and explore a TikTok Shop partnership if the product resonates with your skin. A routine integration or first-impression video could work well depending on what feels most authentic for your page.\n\nWould you be open to sharing your collaboration rate and preferred format? Happy to send more product details if this sounds like a fit.\n\nBest,\nBrand Partnerships Team`
-    }
+    handle: '@beautybyella', priorityLabel: 'high', priorityText: '高', scoreDefault: 8.6,
+    product: { name: 'GlowUp 玻尿酸精华', cat: '护肤 / Skincare', price: 49, market: '美国', age: '25–34', gender: '女性为主', usp: '天然成分、无香精、皮肤科测试认证、敏感肌可用', scene: '睡前护肤，适合追求轻护肤的都市女性' },
+    creator: { fans: '85万', er: '4.8%', views: '120万', age: '25–34为主', shop: '已开通，有带货记录', niche: '护肤 / Skincare', style: '真实测评型', countries: '美国60%、英国15%、加拿大10%', interests: '护肤、美妆、生活方式' },
+    tone: '自然真诚型', goal: '邀请免费寄样测评'
   },
   {
-    name:'@lifewithkate',emoji:'🏠',fans:'42万',er:'3.1',views:'9万',
-    category:'生活方式 · 日常 Vlog · 家居',country:'UK 55% / US 22% / AU 10%',
-    shop:'已开通，暂无带货记录',style:'生活记录 Vlog 型',
-    scores:{audience:6,content:7,commerce:5,total:'6.2'},priority:'中',
-    analysis:{
-      audience:'粉丝以 25–35 岁英国女性为主，年龄段与目标用户接近，但市场以英国为主（55%），与美国目标市场有偏差；若品牌有英国站，匹配度可提升至高。',
-      content:'生活方式 Vlog 内容覆盖面广，护肤品可通过"日常开箱"或"清晨 routine"形式植入；内容融合度中等，需给达人较大创作自由度，避免植入生硬。',
-      commerce:'TikTok Shop 虽已开通但暂无带货记录，转化路径未经验证；ER 3.1% 处于正常水平。建议以寄样 + 佣金分成合作，降低固定成本风险，先测试转化效果。',
-      strategy:'邮件开场提及她某个家居或生活方式视频的具体细节，建立真实关注感；提出低门槛的第一步（免费寄样体验），减少合作决策压力，适合建立长期关系。',
-      suggestion:'① 以"简单生活好物分享"切入，降低广告感，保持内容风格一致\n② 建议佣金分成合作，ROI 风险可控，适合测试英国市场',
-      conclusion:'可谨慎推进，建议低成本试水，优先验证英国市场转化效果。'
-    },
-    email:{
-      subject:'Collaboration idea for @lifewithkate',
-      body:`Hi Kate,\n\nI've been following your channel for a while — I really enjoyed your recent video on your morning wind-down routine. The way you blend everyday moments with honest product mentions feels very natural.\n\nWe're reaching out about Glow Serum, a lightweight daily skincare product focused on simplicity and everyday use. Given your content style, I think it could fit really well into a morning or self-care moment without feeling promotional.\n\nWe'd love to send you a complimentary sample to try first — no strings attached. If it resonates with your routine, we'd be happy to discuss a more formal collaboration.\n\nWould you be open to receiving a sample and sharing your thoughts? I can send over more details if this sounds interesting.\n\nBest,\nBrand Partnerships Team`
-    }
+    handle: '@lifewithkate', priorityLabel: 'mid', priorityText: '中', scoreDefault: 6.2,
+    product: { name: 'GlowUp 玻尿酸精华', cat: '护肤 / Skincare', price: 49, market: '美国', age: '25–34', gender: '女性为主', usp: '天然成分、无香精、皮肤科测试认证', scene: '日常生活护肤场景' },
+    creator: { fans: '42万', er: '3.1%', views: '55万', age: '25–34为主', shop: '已开通，暂无带货', niche: '生活方式 / Lifestyle', style: '生活记录 Vlog 型', countries: '英国55%、美国25%、澳大利亚10%', interests: '生活方式、美妆、健身' },
+    tone: '轻松友好型', goal: '邀请免费寄样测评'
   },
   {
-    name:'@gamerdave99',emoji:'🎮',fans:'120万',er:'2.3',views:'35万',
-    category:'游戏 · 搞笑娱乐 · 挑战赛',country:'US 35% / BR 20% / MX 15%',
-    shop:'未开通',style:'搞笑娱乐型',
-    scores:{audience:2,content:3,commerce:4,total:'3.4'},priority:'低',
-    analysis:{
-      audience:'粉丝以 13–22 岁男性为主（约 78%），与护肤品目标受众（18–25 岁女性）严重错位；拉美市场粉丝占比高，与美国主力市场目标不符，受众重合度极低。',
-      content:'游戏和搞笑娱乐内容与护肤品调性完全不匹配，硬植入广告感极强；用户可能产生负面反应，甚至损伤品牌形象，内容无法自然承载产品卖点。',
-      commerce:'TikTok Shop 未开通，无带货历史；ER 2.3% 在百万粉账号中偏低；粉丝群体消费意愿与护肤品高度不相关，转化路径极长，ROI 预期极低。',
-      strategy:'不建议外联。即使强行合作，粉丝与产品的根本性错位会导致极低转化率，且可能引发负面评论，得不偿失。',
-      suggestion:'① 不建议在护肤品类使用此达人\n② 若品牌推出男性向/年轻化新产品线，可纳入未来备选观察',
-      conclusion:'不建议合作，受众与产品存在根本性错位，资源投入性价比极低。'
-    },
-    email:{
-      subject:'（不建议外联）',
-      body:`⚠️ 根据匹配评分分析，该达人受众画像与产品目标用户存在根本性错位，综合匹配分仅 3.4/10。\n\n建议将此达人移出本次 campaign 外联名单，优先资源应分配给匹配度更高的达人。\n\n如需为其他品类（如游戏周边、饮料、男性护肤）寻找合适达人，此账号可纳入备选。`
-    }
+    handle: '@gamerdave99', priorityLabel: 'low', priorityText: '低', scoreDefault: 3.4,
+    product: { name: 'GlowUp 玻尿酸精华', cat: '护肤 / Skincare', price: 49, market: '美国', age: '25–34', gender: '女性为主', usp: '天然成分、无香精', scene: '护肤' },
+    creator: { fans: '120万', er: '2.3%', views: '200万', age: '18–24为主', shop: '未开通', niche: '游戏 / Gaming', style: '搞笑娱乐型', countries: '美国35%、欧洲30%、亚洲20%', interests: '游戏、科技、娱乐' },
+    tone: '专业商务型', goal: '获取报价与合作意向'
   }
 ];
 
-// ─── Preset select ───────────────────────────────────────────
-function selectPreset(i){
-  document.querySelectorAll('.pc').forEach((c,j)=>c.classList.toggle('sel',j===i));
-  const el=g('preset-result');
-  el.innerHTML=`<div class="loading"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><p class="ltxt">AI 正在分析达人匹配度与外联策略…</p><div class="lprog"><div class="lbar"></div></div></div>`;
-  setTimeout(()=>renderResult(PRESETS[i],el,true),1900);
-}
+/* Fallback data for preset demo without API key */
+const FALLBACK = [
+  {
+    score: 8.6, priority: '高',
+    match_tags: ['受众高度重合', '垂类精准匹配', '带货记录优质'],
+    warn_tags: ['需提前确认档期'], miss_tags: [],
+    analysis: '@beautybyella 的内容垂类与产品品类高度契合，均深耕护肤领域。粉丝以美国 25–34 岁女性为主，与 GlowUp 目标人群完全吻合，受众画像匹配度极高。4.8% 的 Engagement Rate 在同量级账号中处于优秀区间，说明粉丝粘性强、评论互动活跃，具备较强的口碑传播能力。\n\n达人已开通 TikTok Shop 且有实际带货记录，具备从内容种草到购买转化的完整链路。建议将其列为 A 级优先合作对象，以免费寄样测评切入，观察首支内容的评论质量和转化数据后，再逐步升级为付费长期合作。',
+    strategy: '推荐"寄样体验 → 真实测评视频 → TikTok Shop 挂车 → 专属折扣码追踪"的完整闭环。初期以佣金分成模式降低品牌风险，若首月 GMV 超过预期基准，可升级为季度品牌大使合作，提供固定版费 + 佣金叠加方案。',
+    email_subject: 'Collab Invitation: GlowUp Hyaluronic Serum × @beautybyella',
+    email_body: "Hi Ella,\n\nI've been following your skincare content for a while — your honest, no-filter approach to reviewing products is exactly the kind of voice our brand resonates with.\n\nI'm Sarah from GlowUp, a clean skincare brand specializing in hyaluronic acid serums for sensitive skin. Our formula is fragrance-free, dermatologist-tested, and designed for the exact routine your audience loves.\n\nWe'd love to send you a complimentary full-size kit to try with zero obligations — just your real, unscripted experience. If it fits into your routine and you feel your audience would genuinely benefit, we'd love to explore a deeper partnership from there.\n\nWould you be open to a quick 15-min chat this week?\n\nWarm regards,\nSarah Chen\nCreator Partnerships | GlowUp\nsarah@glowup.com"
+  },
+  {
+    score: 6.2, priority: '中',
+    match_tags: ['女性受众高度契合', '生活场景关联性强'],
+    warn_tags: ['ER 低于品类均值', '带货经验待验证'], miss_tags: ['地域错位：英国粉丝为主'],
+    analysis: '@lifewithkate 主攻生活方式 Vlog，与护肤品类存在自然关联，但非精准垂类达人。粉丝女性占比高、年龄层吻合，受众画像与品牌目标用户有一定重叠。然而英国粉丝占比高达 55%，而 GlowUp 当前主推美国市场，存在明显的地域错位，预计实际转化效率会受到影响。\n\nER 3.1% 处于该粉丝量级的中等水平，TikTok Shop 虽已开通但暂无带货记录，说明商业化能力尚未被充分验证。适合作为品牌曝光型的辅助合作，而非主力效果达人。',
+    strategy: '建议先以寄样合作试水，重点观察内容自然融合度和评论区受众反应。若护肤内容与其 Vlog 风格契合，可进一步谈小规模付费合作。同时可将此合作纳入英国市场拓展计划，作为低成本测试渠道。不建议投入大额预算。',
+    email_subject: "Gift Collab: We'd love for you to try GlowUp ✨",
+    email_body: "Hi Kate,\n\nHope your week is going beautifully! I've been a fan of your lifestyle content — the way you weave everyday moments into something genuinely watchable is a real talent.\n\nI'm reaching out from GlowUp skincare. We're launching our hyaluronic serum this season, and honestly, I think it would slide right into your daily routine content in the most natural way.\n\nNo pressure at all — we'd simply love to gift you a full set to try. If it becomes part of your routine and you feel your audience would love it, amazing. If not, no worries at all.\n\nWould you be interested in receiving a complimentary kit?\n\nWarm regards,\nSarah | GlowUp Creator Partnerships"
+  },
+  {
+    score: 3.4, priority: '低',
+    match_tags: ['粉丝体量可观'],
+    warn_tags: ['受众性别与产品严重不符'], miss_tags: ['内容垂类完全不匹配', '无 TikTok Shop 带货能力', '18–24 男性粉丝为主'],
+    analysis: '@gamerdave99 坐拥 120 万粉丝，但内容定位为游戏娱乐，与护肤品类几乎不存在受众交集。粉丝群体以 18–24 岁男性为主，与 GlowUp 目标消费者（25–34 岁女性）在性别和年龄两个维度上均存在根本性错位，强行推进合作预计 ROI 极低。\n\n此外，该达人 ER 仅 2.3%，在百万粉账号中处于偏低区间，且尚未开通 TikTok Shop，缺乏电商转化的基础设施。综合来看，该达人在品类契合度、受众匹配度、带货能力三个核心维度上均不达标，当前阶段强烈不建议合作。',
+    strategy: '当前阶段不建议投入任何资源推进合作。若品牌未来计划拓展男性个护产品线（如男士护肤、洗护等），届时可重新评估其曝光价值。目前建议将有限预算集中在高匹配度的护肤垂类达人上。',
+    email_subject: 'GlowUp Partnership — Keeping You in Mind',
+    email_body: "Hi Dave,\n\nI'm Sarah from GlowUp skincare — we've been exploring creator partnerships across different categories and came across your channel.\n\nYour audience loyalty and content energy are genuinely impressive. While our current campaign is specifically targeting skincare-focused audiences, I wanted to reach out personally rather than pass without a word.\n\nIf you ever branch into lifestyle or personal care content down the road, or if you have audience segments that skew more toward beauty and wellness, we'd genuinely love to revisit the conversation.\n\nKeeping you on our radar!\n\nBest,\nSarah Chen\nGlowUp Brand Partnerships"
+  }
+];
 
-// ─── Custom scoring ──────────────────────────────────────────
-function runAnalysis(){
-  if(!v('kname')||!v('kfans')||!v('ker')){alert('请至少填写达人用户名、粉丝量和互动率');return}
-  setStep(3);
-  const el=g('custom-result');
-  el.innerHTML=`<div class="loading"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><p class="ltxt">AI 正在生成匹配评分与外联邮件…</p><div class="lprog"><div class="lbar"></div></div></div>`;
-  setTimeout(()=>{
-    const d=buildCustomResult();
-    renderResult(d,el,false);
-  },2000);
-}
+/* ── Smart mock generator for custom input (no API key) ── */
+function generateMockResult(d) {
+  const p = d.product;
+  const c = d.creator;
+  const handle = c.handle || '@creator';
+  const firstName = handle.replace('@','').replace(/[^a-zA-Z]/g,'').charAt(0).toUpperCase() + handle.replace('@','').replace(/[^a-zA-Z]/g,'').slice(1,8);
 
-function buildCustomResult(){
-  const pcat=v('pcat'), page=v('page'), pgender=v('pgender'), pmarket=v('pmarket');
-  const kage=v('kage'), kcountry=v('kcountry');
-  const kcategory=v('kcategory'), kstyle=v('kstyle'), kshop=v('kshop');
-  const er=parseFloat(v('ker'))||0, fans=parseFloat(v('kfans'))||0, views=parseFloat(v('kviews'))||0;
-  const ptags=(v('ptags')+' '+v('pusp')+' '+pcat).toLowerCase();
-  const ktags=(v('ktags')+' '+kcategory+' '+kstyle).toLowerCase();
+  // Score calculation based on real matching logic
+  let score = 5.0;
+  const nicheMatch = c.niche && p.cat && c.niche.split('/')[0].trim() === p.cat.split('/')[0].trim();
+  const lifestyleRelated = c.niche && (c.niche.includes('生活方式') || c.niche.includes('时尚') || c.niche.includes('健身'));
+  if (nicheMatch) score += 2.5;
+  else if (lifestyleRelated) score += 0.8;
+  else score -= 1.5;
 
-  // Audience
-  let aud=5;
-  let tagOverlap=0;
-  ptags.split(/[,，\s/]+/).filter(x=>x.length>2).forEach(t=>{if(ktags.includes(t))tagOverlap++});
-  aud+=Math.min(tagOverlap,3);
-  if(page&&kage&&kage.includes(page.replace('18-24','18'))) aud+=1;
-  if(pgender==='female'&&v('kgender').includes('女')) aud+=1;
-  if(pgender==='male'&&v('kgender').includes('男')) aud+=1;
-  if(pmarket&&kcountry.toLowerCase().includes(pmarket==='us'?'us':pmarket==='uk'?'uk':pmarket)) aud+=1;
-  aud=clamp(Math.round(aud),1,10);
+  const er = parseFloat(c.er) || 0;
+  if (er >= 5) score += 1.2;
+  else if (er >= 3) score += 0.5;
+  else score -= 0.5;
 
-  // Content
-  let con=5;
-  const catMap={skincare:['skincare','makeup','lifestyle'],makeup:['makeup','skincare','fashion'],home:['home','lifestyle'],tech:['tech'],sports:['fitness','lifestyle'],food:['food','lifestyle'],fashion:['fashion','lifestyle'],pet:['lifestyle']};
-  if((catMap[pcat]||[]).includes(kcategory)) con+=3;
-  if(['review','tutorial'].includes(kstyle)) con+=2; else if(kstyle==='vlog') con+=1;
-  if(has(kstyle,'娱乐')&&!has(pcat,'food')) con-=1;
-  con=clamp(Math.round(con),1,10);
+  if (c.shop === '已开通，有带货记录') score += 1.0;
+  else if (c.shop === '已开通，暂无带货') score += 0.3;
+  else score -= 0.5;
 
-  // Commerce
-  let com=4;
-  if(kshop==='gmv') com+=4; else if(kshop==='open') com+=2;
-  if(er>=4) com+=2; else if(er>=2.5) com+=1; else com-=1;
-  if(views>0&&fans>0&&views/fans>=0.2) com+=1;
-  if(fans>100&&er<2) com-=1;
-  com=clamp(Math.round(com),1,10);
+  const ageMatch = c.age && p.age && c.age.includes(p.age.split('–')[0]);
+  if (ageMatch) score += 0.5;
 
-  const total=(aud*0.5+con*0.3+com*0.2).toFixed(1);
-  const priority=parseFloat(total)>=7.5?'高':parseFloat(total)>=5.5?'中':'低';
+  const marketMatch = c.countries && p.market && c.countries.includes(p.market);
+  if (!marketMatch && p.market !== '全球') score -= 0.8;
 
-  // Analysis text
-  const audTxt=aud>=8?`粉丝年龄段与性别与目标用户画像高度吻合，受众市场重合度强；兴趣标签与产品品类形成强匹配，是本次 campaign 的优质受众来源。`:
-    aud>=6?`受众画像与目标用户存在一定重合，年龄或市场略有偏差；建议结合具体粉丝数据进一步核实匹配程度，可作为备选外联对象。`:
-    `受众画像与目标用户存在较明显错位，粉丝群体与产品目标消费者相关度低，资源投入性价比有限。`;
-  const conTxt=con>=8?`内容垂类与产品品类高度契合，${kstyle==='review'?'测评风格有助于建立信任感':'Vlog 风格植入自然'}，产品种草路径清晰，用户接受度预期较高。`:
-    con>=6?`内容垂类有一定关联，需要设计合适的内容形式才能自然植入，建议给达人较大创作自由度，避免植入生硬。`:
-    `内容调性与产品存在较大差距，强行植入广告感明显，可能引发粉丝负面反应。`;
-  const comTxt=kshop==='gmv'?`TikTok Shop 有带货记录，转化路径经过验证；ER ${er}% ${er>=4?'高于':'处于'}行业均值，粉丝消费意愿较强，商业转化潜力充分。`:
-    kshop==='open'?`TikTok Shop 已开通但暂无带货记录，转化能力待验证；建议采用佣金分成降低前期风险，以数据验证转化潜力。`:
-    `TikTok Shop 未开通，需引导至外部链接，转化漏斗较长；建议以品牌曝光为主要目标，不强求直接转化。`;
-  const stratTxt=priority==='高'?`首封邮件应引用达人某条具体内容细节，建立真实关注感；直接说明产品与其内容的匹配点，提出具体合作形式，语气自信但不强迫。`:
-    priority==='中'?`建议以低门槛方式开场（如免费寄样），减少合作决策压力；邮件重点突出产品与达人内容风格的契合之处，为长期合作埋下伏笔。`:
-    `暂不建议外联此达人，受众或内容匹配度不足，建议将资源集中于评分更高的达人。`;
-  const suggTxt=con>=7?`① 结合产品使用场景设计"真实体验"类内容，提升种草信任度\n② 可在视频中添加 TikTok Shop 购物车链接，缩短转化路径`:
-    `① 建议给予达人较大创作自由度，保持内容风格一致性\n② 以品牌曝光和粉丝认知为主要目标，不强求直接转化`;
-  const conclTxt=priority==='高'?'强烈推荐优先外联，各维度匹配度高，预期 ROI 良好。':
-    priority==='中'?'建议谨慎推进，可从低成本合作形式开始测试效果。':
-    '暂不建议合作，匹配度不足，建议将资源分配给评分更高的达人。';
+  score = Math.min(9.8, Math.max(1.5, parseFloat(score.toFixed(1))));
+  const priority = score >= 7 ? '高' : score >= 5 ? '中' : '低';
+
+  // Tags
+  const match_tags = [];
+  const warn_tags = [];
+  const miss_tags = [];
+
+  if (nicheMatch) match_tags.push('垂类精准匹配');
+  else if (lifestyleRelated) match_tags.push('内容场景关联性强');
+  else miss_tags.push('垂类不匹配');
+
+  if (er >= 4.5) match_tags.push(`ER ${er}% 表现优秀`);
+  else if (er >= 3) warn_tags.push(`ER ${er}% 处于中等水平`);
+  else miss_tags.push(`ER ${er}% 偏低`);
+
+  if (c.shop === '已开通，有带货记录') match_tags.push('TikTok Shop 带货能力强');
+  else if (c.shop === '已开通，暂无带货') warn_tags.push('带货经验待验证');
+  else miss_tags.push('无 Shop 带货能力');
+
+  if (marketMatch) match_tags.push(`${p.market}市场覆盖良好`);
+  else if (p.market !== '全球') warn_tags.push('主要市场地域存在偏差');
+
+  if (ageMatch) match_tags.push('受众年龄高度吻合');
+
+  // Analysis
+  const fans = c.fans || '未知';
+  const views = c.views || '未知';
+  const niche = c.niche || '未知垂类';
+  const style = c.style || '未知风格';
+  const pname = p.name || '该产品';
+  const pcat = p.cat || '该品类';
+
+  const nicheDesc = nicheMatch
+    ? `内容垂类与产品品类高度吻合，均深耕${pcat.split('/')[0].trim()}领域，受众对此类内容有强烈消费意愿。`
+    : lifestyleRelated
+    ? `内容定位为${niche}，与${pcat}存在一定的场景关联性，但非精准垂类，受众转化需要更多内容引导。`
+    : `内容定位为${niche}，与${pcat}品类受众画像差异较大，垂类匹配度偏低，需评估是否值得跨类合作。`;
+
+  const erDesc = er >= 4.5
+    ? `${er}% 的高 Engagement Rate 表明粉丝粘性强，评论互动活跃，具备较强的口碑扩散和转化带动能力。`
+    : er >= 3
+    ? `${er}% 的 ER 处于该粉丝量级的中等水平，粉丝活跃度尚可，但转化能力有待通过实际带货数据进一步验证。`
+    : `${er}% 的 ER 低于品类平均水平，粉丝互动较为有限，建议在确认内容质量后再评估合作投入规模。`;
+
+  const shopDesc = c.shop === '已开通，有带货记录'
+    ? '达人已开通 TikTok Shop 且有实际带货历史，具备从内容种草到成交转化的完整商业化能力。'
+    : c.shop === '已开通，暂无带货'
+    ? 'TikTok Shop 已开通但尚无带货记录，电商转化能力有待首次合作验证，建议以低风险形式试水。'
+    : '未开通 TikTok Shop，当前缺乏直接的电商转化路径，合作形式建议以品牌曝光为主。';
+
+  const analysis = `${handle} 拥有 ${fans} 粉丝，近 30 天均播放量 ${views}，内容风格为${style}。${nicheDesc}\n\n${erDesc}${shopDesc}\n\n综合受众画像匹配度、内容契合度与带货转化能力三个维度，该达人当前综合评分为 ${score}/10，建议将其列为${priority}优先级合作候选。`;
+
+  // Strategy
+  const strategyMap = {
+    '高': `建议以"免费寄样 → 真实测评 → TikTok Shop 挂车"为核心合作链路，配合专属折扣码追踪转化 ROI。首次合作成功后可升级为季度品牌大使，提供固定版费 + 佣金叠加方案。`,
+    '中': `建议先以寄样形式低成本试水，重点观察内容自然融合度和评论区受众反应。若首支内容表现良好，再逐步升级为付费合作，控制初期预算投入风险。`,
+    '低': `当前阶段不建议投入核心预算。如有品牌曝光需求且预算充足，可考虑低价合作获取站外流量；否则建议将资源优先分配至高匹配度达人。`
+  };
+  const strategy = strategyMap[priority];
 
   // Email
-  const email=buildEmail(priority,aud,con,com);
+  const goalLine = {
+    '获取报价与合作意向': "explore a potential paid collaboration",
+    '邀请免费寄样测评': "send you a complimentary product to try",
+    '邀请付费短视频合作': "discuss a paid content partnership",
+    '邀请 TikTok Shop 带货': "explore a TikTok Shop affiliate partnership"
+  }[d.goal] || "explore a collaboration";
 
-  return{
-    name:v('kname'),emoji:'👤',fans:v('kfans')+'万',er:er+'',views:v('kviews')+'万',
-    category:v('kcategory')||'—',country:v('kcountry')||'—',
-    scores:{audience:aud,content:con,commerce:com,total},priority,
-    analysis:{audience:audTxt,content:conTxt,commerce:comTxt,strategy:stratTxt,suggestion:suggTxt,conclusion:conclTxt},
-    email
+  const toneOpener = {
+    '自然真诚型': `I've been genuinely enjoying your ${niche} content — the way you connect with your audience feels really authentic.`,
+    '专业商务型': `I'm reaching out on behalf of ${pname} to explore a potential creator partnership opportunity.`,
+    '轻松友好型': `Hey ${firstName}! Big fan of your content — love what you've been creating lately.`,
+    '强利益点型': `I'll get straight to the point — your audience is a strong match for our product, and I think there's a real revenue opportunity here.`
+  }[d.tone] || `I've been following your content and think there's a great fit with our brand.`;
+
+  const email_subject = `${d.tone === '专业商务型' ? 'Partnership Proposal' : 'Collab Opportunity'}: ${pname} × ${handle}`;
+  const email_body = `Hi ${firstName},\n\n${toneOpener}\n\nI'm reaching out from ${pname}, a ${pcat} brand focused on ${p.usp || 'quality and innovation'}. We'd love to ${goalLine} with you — your content style and audience align really well with what we stand for.\n\n${p.scene ? `Our product fits naturally into ${p.scene.toLowerCase()} — exactly the kind of content your audience already loves.` : 'We think your audience would genuinely resonate with what we offer.'}\n\nWould you be open to a quick chat to explore this further?\n\nBest,\nSarah Chen\nCreator Partnerships | ${pname}`;
+
+  return { score, priority, match_tags, warn_tags, miss_tags, analysis, strategy, email_subject, email_body };
+}
+
+/* ── API Key ── */
+document.getElementById('apiKeyInput').addEventListener('input', function () {
+  const v = this.value.trim();
+  const s = document.getElementById('apiStatus');
+  if (v.startsWith('sk-ant-') && v.length > 20) {
+    s.textContent = '已配置 ✓'; s.className = 'api-status ok';
+  } else if (v.length > 0) {
+    s.textContent = '格式有误'; s.className = 'api-status bad';
+  } else {
+    s.textContent = '未配置'; s.className = 'api-status none';
+  }
+});
+
+function getApiKey() { return document.getElementById('apiKeyInput').value.trim(); }
+
+/* ── Mode ── */
+function switchMode(m) {
+  currentMode = m;
+  ['Preset','Custom','Batch'].forEach(n => {
+    document.getElementById('btn'+n).classList.toggle('active', m === n.toLowerCase());
+  });
+  document.getElementById('presetMode').style.display = m === 'preset' ? 'block' : 'none';
+  document.getElementById('customMode').style.display = m === 'custom' ? 'block' : 'none';
+  document.getElementById('batchMode').style.display = m === 'batch' ? 'block' : 'none';
+  if (m === 'preset' && !document.getElementById('presetResult').innerHTML) selectPreset(0);
+}
+
+/* ── Preset ── */
+function selectPreset(i) {
+  selectedPreset = i;
+  [0, 1, 2].forEach(j => document.getElementById('pc' + j).classList.toggle('selected', j === i));
+  runPreset(PRESETS[i]);
+}
+
+async function runPreset(p) {
+  const container = document.getElementById('presetResult');
+  const key = getApiKey();
+  if (!key || !key.startsWith('sk-ant-')) {
+    renderResult(container, FALLBACK[selectedPreset], p.handle, true);
+    return;
+  }
+  renderLoading(container, p.handle);
+  try {
+    const data = { product: p.product, creator: { ...p.creator, handle: p.handle }, tone: p.tone, goal: p.goal };
+    const text = await callClaude(buildPrompt(data));
+    renderResult(container, parseJSON(text), p.handle, false);
+  } catch (e) {
+    renderError(container, e.message);
+    renderResult(container, FALLBACK[selectedPreset], p.handle, true);
+  }
+}
+
+/* ── Step navigation ── */
+function goStep(n) {
+  [1, 2, 3].forEach(i => {
+    const el = document.getElementById('formStep' + i);
+    if (el) el.style.display = i === n ? 'block' : 'none';
+    const s = document.getElementById('step' + i);
+    if (s) s.className = 'step' + (i === n ? ' active' : i < n ? ' done' : '');
+  });
+}
+function resetCustom() {
+  document.getElementById('formStep3').style.display = 'none';
+  document.getElementById('formStep2').style.display = 'block';
+  document.getElementById('step2').className = 'step active';
+  document.getElementById('step3').className = 'step';
+}
+
+/* ── Radio pick ── */
+function pick(el, groupId, val) {
+  document.querySelectorAll('#' + groupId + ' .radio-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  if (groupId === 'emailToneGroup') emailTone = val;
+  if (groupId === 'collabGoalGroup') collabGoal = val;
+}
+
+/* ── Generate custom ── */
+async function generateReport() {
+  if (isGenerating) return;
+  const key = getApiKey();
+  const data = {
+    product: {
+      name: document.getElementById('f_pname').value || '（未填）',
+      cat: document.getElementById('f_pcat').value || '（未填）',
+      price: document.getElementById('f_price').value || '未知',
+      market: document.getElementById('f_market').value || '全球',
+      age: document.getElementById('f_age').value || '（未填）',
+      gender: document.getElementById('f_gender').value || '不限',
+      usp: document.getElementById('f_usp').value || '（未填）',
+      scene: document.getElementById('f_scene').value || '（未填）'
+    },
+    creator: {
+      handle: document.getElementById('c_handle').value || '@creator',
+      fans: (document.getElementById('c_fans').value || '0') + '万',
+      er: (document.getElementById('c_er').value || '0') + '%',
+      views: (document.getElementById('c_views').value || '0') + '万',
+      age: document.getElementById('c_age').value || '未知',
+      shop: document.getElementById('c_shop').value || '未知',
+      niche: document.getElementById('c_niche').value || '未知',
+      style: document.getElementById('c_style').value || '未知',
+      countries: document.getElementById('c_countries').value || '（未填）',
+      interests: document.getElementById('c_tags').value || '（未填）'
+    },
+    tone: emailTone, goal: collabGoal
+  };
+
+  isGenerating = true;
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div style="width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite"></div><span>生成中...</span>';
+
+  goStep(3);
+  const container = document.getElementById('customResult');
+  renderLoading(container, data.creator.handle);
+
+  try {
+    if (!key || !key.startsWith('sk-ant-')) {
+      // No API key: use smart mock generator with 1.2s fake delay
+      await new Promise(r => setTimeout(r, 1200));
+      const mockResult = generateMockResult(data);
+      renderResult(container, mockResult, data.creator.handle, true);
+    } else {
+      const text = await callClaude(buildPrompt(data));
+      renderResult(container, parseJSON(text), data.creator.handle, false);
+    }
+  } catch (e) {
+    renderError(container, e.message);
+  } finally {
+    isGenerating = false;
+    btn.disabled = false;
+    btn.innerHTML = '<span>✦ 生成 AI 评估报告</span>';
+  }
+}
+
+/* ── Claude API ── */
+function buildPrompt(d) {
+  return `你是一位专业的跨境电商 TikTok 达人合作分析师。请基于以下信息，生成完整的达人合作评估报告。
+
+## 甲方产品画像
+- 产品名称：${d.product.name}
+- 品类：${d.product.cat}
+- 客单价：$${d.product.price}
+- 目标市场：${d.product.market}
+- 目标用户：${d.product.age}，${d.product.gender}
+- 核心卖点：${d.product.usp}
+- 消费场景：${d.product.scene}
+
+## TikTok 达人数据
+- 用户名：${d.creator.handle}
+- 粉丝量：${d.creator.fans}
+- Engagement Rate：${d.creator.er}
+- 近30天均播放：${d.creator.views}
+- 粉丝主要年龄：${d.creator.age}
+- TikTok Shop：${d.creator.shop}
+- 内容垂类：${d.creator.niche}
+- 内容风格：${d.creator.style}
+- 粉丝国家：${d.creator.countries}
+- 粉丝兴趣：${d.creator.interests}
+
+请严格按以下 JSON 格式输出，不要输出任何其他内容，不要加 markdown 代码块：
+{"score":<0-10的数字，一位小数>,"priority":"<高|中|低>","match_tags":["<匹配优势1>","<匹配优势2>","<匹配优势3>"],"warn_tags":["<注意项>"],"miss_tags":["<不匹配项>"],"analysis":"<2-3段专业分析，包含受众匹配度、内容契合度、带货能力评估，共约200字，段落间用\\n\\n分隔>","strategy":"<合作策略建议，约100字>","email_subject":"<英文邮件主题>","email_body":"<个性化英文外联邮件，语气：${d.tone}，目标：${d.goal}，约150-200词，段落间用\\n\\n分隔>"}`;
+}
+
+async function callClaude(prompt) {
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': getApiKey(),
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  if (!resp.ok) {
+    const e = await resp.json().catch(() => ({}));
+    throw new Error(e.error?.message || `HTTP ${resp.status}`);
+  }
+  const d = await resp.json();
+  return d.content.map(b => b.text || '').join('');
+}
+
+function parseJSON(text) {
+  return JSON.parse(text.replace(/```json|```/g, '').trim());
+}
+
+/* ── Render helpers ── */
+function renderLoading(el, handle) {
+  el.innerHTML = `
+    <div class="rcard">
+      <div class="loading-wrap">
+        <div class="spinner"></div>
+        <div class="loading-text">Claude 正在分析 ${handle}…</div>
+        <div class="loading-sub">评估受众匹配度、内容契合度与带货能力</div>
+      </div>
+    </div>`;
+}
+
+function renderError(el, msg) {
+  el.innerHTML = `<div class="error-msg">⚠ ${msg}</div>`;
+}
+
+function renderResult(el, r, handle, isDemo) {
+  const score = parseFloat(r.score);
+  const color = score >= 7 ? 'var(--green)' : score >= 5 ? 'var(--amber)' : 'var(--red)';
+  const circ = 2 * Math.PI * 28;
+  const dash = (score / 10) * circ;
+  const matchHTML = (r.match_tags || []).map(t => `<span class="stag match">${t}</span>`).join('');
+  const warnHTML = (r.warn_tags || []).map(t => `<span class="stag warn">${t}</span>`).join('');
+  const missHTML = (r.miss_tags || []).map(t => `<span class="stag miss">${t}</span>`).join('');
+  const analysisHTML = (r.analysis || '').split('\n\n').map(p => `<p>${p}</p>`).join('');
+  const emailHTML = (r.email_body || '').replace(/\n\n/g, '\n\n');
+
+  el.innerHTML = `
+    ${isDemo ? `<div style="font-size:12px;color:var(--text3);padding:0 0 10px;text-align:center;border:1px solid var(--border);border-radius:6px;margin-bottom:4px;padding:8px">⚡ 基于输入数据的智能模拟结果 · 配置 API Key 后将调用真实 Claude 生成更深度分析</div>` : ''}
+
+    <div class="score-hero">
+      <div class="score-ring">
+        <svg viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="35" cy="35" r="28" fill="none" stroke="var(--bg3)" stroke-width="6"/>
+          <circle cx="35" cy="35" r="28" fill="none" stroke="${color}" stroke-width="6"
+            stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}"
+            stroke-linecap="round" transform="rotate(-90 35 35)"/>
+        </svg>
+      </div>
+      <div class="score-info">
+        <div class="score-value" style="color:${color}">${score.toFixed(1)}<span style="font-size:14px;color:var(--text3)">/10</span></div>
+        <div class="score-sub">匹配评分 · 优先级：${r.priority}</div>
+        <div class="score-tags">${matchHTML}${warnHTML}${missHTML}</div>
+      </div>
+    </div>
+
+    <div class="rcard">
+      <div class="rcard-head"><span class="rcard-title">合作分析</span></div>
+      <div class="rcard-body">${analysisHTML}</div>
+    </div>
+
+    <div class="rcard">
+      <div class="rcard-head"><span class="rcard-title">合作策略建议</span></div>
+      <div class="rcard-body"><p>${r.strategy || ''}</p></div>
+    </div>
+
+    <div class="rcard">
+      <div class="rcard-head">
+        <span class="rcard-title">个性化外联邮件</span>
+        <button class="copy-btn" onclick="copyEmail(this)">复制邮件</button>
+      </div>
+      <div class="rcard-body">
+        <div class="email-subject">Subject: ${r.email_subject || ''}</div>
+        <div class="email-wrap" id="emailBody">${emailHTML}</div>
+      </div>
+    </div>`;
+}
+
+function copyEmail(btn) {
+  const el = document.getElementById('emailBody');
+  navigator.clipboard.writeText(el.innerText).then(() => {
+    btn.textContent = '已复制 ✓';
+    setTimeout(() => { btn.textContent = '复制邮件'; }, 2000);
+  });
+}
+
+
+/* ══════════════════════════════════════════
+   BATCH MODE
+══════════════════════════════════════════ */
+let batchResults = [];
+let batchFilter = 'all';
+let expandedRow = null;
+
+/* ── Sample CSV data (20 creators) ── */
+const SAMPLE_CSV = `handle,fans_w,er,views_w,age,shop,niche,style,countries,interests
+@skincarequeen_usa,92,5.1,140,25–34为主,已开通，有带货记录,护肤 / Skincare,真实测评型,"美国65%、英国15%、加拿大10%","护肤、美妆、生活方式"
+@glowwithme_daily,45,4.3,80,25–34为主,已开通，暂无带货,护肤 / Skincare,教程 Tutorial 型,"美国70%、澳大利亚15%、英国10%","护肤、健康、wellness"
+@lifestylebyanna,120,3.2,180,25–34为主,已开通，有带货记录,生活方式 / Lifestyle,生活记录 Vlog 型,"美国55%、英国20%、加拿大10%","生活方式、美妆、家居"
+@beautynerdhq,38,6.2,65,18–24为主,已开通，有带货记录,彩妆 / Makeup,专业知识型,"美国60%、英国20%、澳大利亚10%","彩妆、护肤、时尚"
+@fitnessmomlife,67,4.8,95,25–34为主,已开通，暂无带货,健身 / Fitness,生活记录 Vlog 型,"美国75%、加拿大15%、英国5%","健身、健康、生活方式"
+@techreviewsjake,210,2.1,380,18–24为主,未开通,科技 / Tech,专业知识型,"美国40%、欧洲30%、亚洲20%","科技、游戏、数码"
+@mommyandme_uk,55,3.9,72,25–34为主,已开通，暂无带货,生活方式 / Lifestyle,生活记录 Vlog 型,"英国60%、澳大利亚20%、美国10%","育儿、生活方式、美妆"
+@foodieparadise,88,4.5,130,25–34为主,已开通，有带货记录,美食 / Food,教程 Tutorial 型,"美国50%、英国20%、加拿大15%","美食、生活方式、健康"
+@skinscience_pro,29,7.1,48,25–34为主,已开通，有带货记录,护肤 / Skincare,专业知识型,"美国65%、英国20%、加拿大10%","护肤、皮肤科学、健康"
+@casualfashiongirl,73,3.8,110,18–24为主,已开通，暂无带货,时尚 / Fashion,生活记录 Vlog 型,"美国55%、英国25%、澳大利亚10%","时尚、美妆、生活方式"
+@nightroutineclub,41,5.6,70,25–34为主,已开通，有带货记录,护肤 / Skincare,真实测评型,"美国72%、加拿大13%、英国10%","护肤、睡眠、wellness"
+@homegymhero,95,3.1,145,25–34为主,未开通,健身 / Fitness,教程 Tutorial 型,"美国60%、英国20%、加拿大10%","健身、运动、健康"
+@cleanbeautymaven,33,6.8,55,25–34为主,已开通，有带货记录,护肤 / Skincare,真实测评型,"美国68%、英国17%、加拿大10%","护肤、清洁美妆、环保"
+@gamingwithdave,180,2.4,290,18–24为主,未开通,游戏 / Gaming,搞笑娱乐型,"美国35%、欧洲35%、亚洲20%","游戏、科技、娱乐"
+@petmomdiaries,52,4.2,78,25–34为主,已开通，暂无带货,生活方式 / Lifestyle,生活记录 Vlog 型,"美国65%、英国20%、加拿大10%","宠物、生活方式、家居"
+@makeuptutorialhub,64,5.3,98,18–24为主,已开通，有带货记录,彩妆 / Makeup,教程 Tutorial 型,"美国58%、英国22%、澳大利亚12%","彩妆、美妆、时尚"
+@sensitiveskinclub,27,7.4,44,25–34为主,已开通，有带货记录,护肤 / Skincare,专业知识型,"美国70%、英国15%、加拿大10%","护肤、敏感肌、纯净美妆"
+@diyhomedecor,110,3.6,165,25–34为主,已开通，有带货记录,家居 / Home,教程 Tutorial 型,"美国58%、英国22%、澳大利亚12%","家居、DIY、生活方式"
+@yogamindfulness,48,4.9,74,25–34为主,已开通，暂无带货,健身 / Fitness,生活记录 Vlog 型,"美国62%、英国18%、加拿大12%","瑜伽、wellness、生活方式"
+@cookingwithsophie,76,4.1,115,25–34为主,已开通，有带货记录,美食 / Food,教程 Tutorial 型,"美国55%、英国20%、加拿大15%","美食、烹饪、生活方式"`;
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g,''));
+  return lines.slice(1).map(line => {
+    // Handle quoted fields with commas
+    const fields = [];
+    let cur = '', inQ = false;
+    for (let ch of line) {
+      if (ch === '"') inQ = !inQ;
+      else if (ch === ',' && !inQ) { fields.push(cur.trim()); cur = ''; }
+      else cur += ch;
+    }
+    fields.push(cur.trim());
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = (fields[i] || '').replace(/"/g, ''));
+    return obj;
+  }).filter(r => r.handle);
+}
+
+function csvRowToCreator(row) {
+  return {
+    handle: row.handle || '@unknown',
+    fans: (row.fans_w || '0') + '万',
+    er: (row.er || '0') + '%',
+    views: (row.views_w || '0') + '万',
+    age: row.age || '未知',
+    shop: row.shop || '未知',
+    niche: row.niche || '未知',
+    style: row.style || '未知',
+    countries: row.countries || '未知',
+    interests: row.interests || '未知'
   };
 }
 
-function buildEmail(priority,aud,con,com){
-  const creator=v('kname').replace('@','');
-  const product=v('pname')||'our product';
-  const category=v('pcat')||'lifestyle';
-  const usp=v('pusp')||'practical value and quality';
-  const style=v('kstyle')||'authentic content style';
-  const tone=v('etone'), goal=v('egoal');
+function getBatchProduct() {
+  return {
+    name: document.getElementById('b_pname').value || 'GlowUp 玻尿酸精华',
+    cat: document.getElementById('b_pcat').value || '护肤 / Skincare',
+    price: 49,
+    market: document.getElementById('b_market').value || '美国',
+    age: document.getElementById('b_target').value || '25–34',
+    gender: '女性为主',
+    usp: document.getElementById('b_usp').value || '天然成分、无香精、皮肤科认证',
+    scene: '护肤日常场景'
+  };
+}
 
-  if(priority==='低'){
-    return{
-      subject:'（匹配度过低，不建议外联）',
-      body:`⚠️ 根据匹配评分分析，该达人综合匹配分较低，受众或内容调性与产品存在明显错位。\n\n建议将该达人移出本次 campaign 外联名单，优先将资源分配给匹配度更高的达人。`
-    };
+function handleCSVUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const rows = parseCSV(ev.target.result);
+    if (!rows.length) { alert('CSV 解析失败，请检查格式'); return; }
+    runBatchAnalysis(rows);
+  };
+  reader.readAsText(file);
+}
+
+function loadSampleCSV() {
+  const rows = parseCSV(SAMPLE_CSV);
+  runBatchAnalysis(rows);
+}
+
+async function runBatchAnalysis(rows) {
+  const product = getBatchProduct();
+  const total = Math.min(rows.length, 200);
+  batchResults = [];
+  expandedRow = null;
+
+  // Show progress, hide upload zone
+  document.getElementById('uploadZone').style.display = 'none';
+  document.getElementById('batchProgress').style.display = 'block';
+  document.getElementById('batchStats').style.display = 'none';
+  document.getElementById('batchToolbar').style.display = 'none';
+  document.getElementById('batchTable').innerHTML = '';
+  document.getElementById('batchDrawer').innerHTML = '';
+
+  const key = getApiKey();
+  const useAPI = key && key.startsWith('sk-ant-');
+
+  for (let i = 0; i < total; i++) {
+    const row = rows[i];
+    const creator = csvRowToCreator(row);
+    document.getElementById('progressLabel').textContent = `正在分析 ${creator.handle}…`;
+    document.getElementById('progressCount').textContent = `${i + 1} / ${total}`;
+    document.getElementById('progressBar').style.width = ((i + 1) / total * 100) + '%';
+
+    let result;
+    if (useAPI) {
+      try {
+        const data = { product, creator, tone: '自然真诚型', goal: '邀请免费寄样测评' };
+        const text = await callClaude(buildPrompt(data));
+        result = parseJSON(text);
+      } catch(e) {
+        result = generateMockResult({ product, creator, tone: '自然真诚型', goal: '邀请免费寄样测评' });
+      }
+    } else {
+      // Simulate slight delay for dramatic effect
+      await new Promise(r => setTimeout(r, 60));
+      result = generateMockResult({ product, creator, tone: '自然真诚型', goal: '邀请免费寄样测评' });
+    }
+
+    batchResults.push({ creator, result });
   }
 
-  // Subject
-  const catLabel=category.toLowerCase();
-  const subj=catLabel.includes('skincare')||catLabel.includes('护肤')?`Skincare collaboration idea for @${creator}`:
-    catLabel.includes('makeup')||catLabel.includes('彩妆')?`Beauty collaboration idea for @${creator}`:
-    catLabel.includes('tech')||catLabel.includes('3c')?`Tech product collaboration for @${creator}`:
-    `Collaboration idea for @${creator}`;
+  // Done
+  document.getElementById('batchProgress').style.display = 'none';
+  document.getElementById('progressLabel').textContent = '分析完成';
 
-  // Opening line by tone
-  const open=tone==='professional'?`I am reaching out from our brand partnerships team after reviewing your recent content on TikTok.`:
-    tone==='casual'?`I came across your TikTok recently and loved the way your videos feel so natural and easy to watch.`:
-    tone==='value'?`I noticed your TikTok engagement is well above average — we'd love to offer you a high-converting collaboration opportunity.`:
-    `I found your TikTok content and really liked how naturally you connect product moments with your audience.`;
+  renderBatchStats();
+  renderHighEmailPanel();
+  renderBatchTable();
 
-  // Collab line by goal
-  const collab=goal==='sample'?`We'd love to send you a complimentary sample — no commitment required. If it resonates with your routine, we'd be happy to discuss a more formal partnership.`:
-    goal==='paid'?`We are looking for creators for a paid short-video collaboration and think your content style would be a great fit. We'd love to discuss your rate and availability.`:
-    goal==='shop'?`We are building a TikTok Shop creator program and think your audience could be a strong fit for our product category. We'd love to discuss a commission-based partnership.`:
-    `We'd love to explore a collaboration and learn more about your partnership rates and preferred content formats.`;
-
-  // Style hint
-  const styleHint=style==='review'?'review-style video or honest first impression':
-    style==='vlog'?'routine integration or daily-life moment':
-    style==='tutorial'?'tutorial or how-to format':
-    'content format that feels natural for your page';
-
-  const body=`Hi ${creator},\n\n${open}\n\nWe are working on ${product}, a ${category} product focused on ${usp}. Since your content leans toward ${style}, I think there could be a natural way to feature the product without making the video feel too promotional.\n\n${collab} A ${styleHint} could work well depending on what feels most authentic.\n\nWould you be open to sharing your collaboration details? I'm happy to send more product information if this sounds like a fit.\n\nBest,\nBrand Partnerships Team`;
-
-  return{subject:subj,body};
+  document.getElementById('batchStats').style.display = 'block';
+  document.getElementById('highEmailPanel').style.display = 'block';
+  document.getElementById('batchToolbar').style.display = 'flex';
+  document.getElementById('batchTable').style.display = 'block';
 }
 
-// ─── Render result ────────────────────────────────────────────
-function renderResult(d,el,isPreset){
-  const s=d.scores, p=d.priority, a=d.analysis, e=d.email||{};
-  const pc=p==='高'?'ph':p==='中'?'pm':'pl';
-  const dims=[
-    ['audience','👥 受众重合度',s.audience],
-    ['content','🎬 内容调性匹配',s.content],
-    ['commerce','🛒 商业转化潜力',s.commerce],
-    ['total','⭐ 综合匹配分',s.total]
-  ];
+function renderBatchStats() {
+  const high = batchResults.filter(r => r.result.priority === '高').length;
+  const mid  = batchResults.filter(r => r.result.priority === '中').length;
+  const low  = batchResults.filter(r => r.result.priority === '低').length;
+  document.getElementById('statTotal').textContent = batchResults.length;
+  document.getElementById('statHigh').textContent = high;
+  document.getElementById('statMid').textContent = mid;
+  document.getElementById('statLow').textContent = low;
+}
 
-  el.innerHTML=`
-<div class="rc">
-  <div class="rc-head">
-    <div class="rc-avatar">${d.emoji||'👤'}</div>
-    <div class="rc-info">
-      <div class="rc-name">${esc(d.name)}</div>
-      <div class="rc-meta">${esc(d.fans)} 粉丝 · ER ${esc(d.er)}% · ${esc(d.category)}</div>
-    </div>
-    <span class="pri-badge ${pc}">合作优先级：${p}</span>
-  </div>
-  <div class="sg">
-    ${dims.map(([k,lbl,val])=>`
-    <div class="si">
-      <div class="sv" style="color:${bc(val)}">${val}<span class="sd">/10</span></div>
-      <div class="sl2">${lbl}</div>
-      <div class="sbw"><div class="sb" id="sb-${k}" style="width:0;background:${bc(val)}"></div></div>
-    </div>`).join('')}
-  </div>
-  <div class="ab">
-    <div class="as"><div class="at">👥 受众重合度分析</div><div class="ax">${esc(a.audience)}</div></div>
-    <div class="dv"></div>
-    <div class="as"><div class="at">🎬 内容调性分析</div><div class="ax">${esc(a.content)}</div></div>
-    <div class="dv"></div>
-    <div class="as"><div class="at">🛒 商业转化潜力</div><div class="ax">${esc(a.commerce)}</div></div>
-    <div class="dv"></div>
-    <div class="as"><div class="at">🎯 外联策略建议</div><div class="ax">${esc(a.strategy||'')}</div></div>
-    <div class="dv"></div>
-    <div class="as"><div class="at">💡 内容合作形式建议</div><div class="ax" style="white-space:pre-line">${esc(a.suggestion||'')}</div></div>
-    <div class="dv"></div>
-    <div class="as">
-      <div class="at">✉️ AI 个性化外联邮件</div>
-      <div class="email-box">
-        <div class="email-subject"><strong>Subject:</strong><span>${esc(e.subject||'')}</span></div>
-        <div class="email-body" id="email-body-${isPreset?'p':'c'}">${esc(e.body||e.full_email||'')}</div>
-        <div class="copy-row">
-          <span class="copy-hint">可直接复制发送，或根据达人具体内容调整开场细节</span>
-          <button class="btn sm" onclick="copyEmail('${isPreset?'p':'c'}','${esc(e.subject||'')}')">复制邮件</button>
-        </div>
+function filterBatch(priority, btn) {
+  batchFilter = priority;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  expandedRow = null;
+  document.getElementById('batchDrawer').innerHTML = '';
+  renderBatchTable();
+}
+
+function renderBatchTable() {
+  const filtered = batchFilter === 'all'
+    ? batchResults
+    : batchResults.filter(r => r.result.priority === batchFilter);
+
+  const sorted = [...filtered].sort((a, b) => b.result.score - a.result.score);
+  const globalIndices = sorted.map(item => batchResults.indexOf(item));
+
+  const tableEl = document.getElementById('batchTable');
+  tableEl.innerHTML = `
+    <div class="batch-table">
+      <div class="batch-thead">
+        <div>达人账号</div>
+        <div>粉丝量</div>
+        <div>ER</div>
+        <div>评分</div>
+        <div>优先级</div>
+        <div>垂类</div>
       </div>
-    </div>
-    <div class="conc">✓ ${esc(a.conclusion)}</div>
-  </div>
-</div>`;
+      ${sorted.map((item, i) => {
+        const r = item.result;
+        const c = item.creator;
+        const gIdx = globalIndices[i];
+        const pClass = r.priority === '高' ? 'high' : r.priority === '中' ? 'mid' : 'low';
+        const scoreColor = r.score >= 7 ? 'var(--green)' : r.score >= 5 ? 'var(--amber)' : 'var(--red)';
+        const isExpanded = expandedRow === gIdx;
+        return `<div class="batch-row${isExpanded ? ' expanded' : ''}" onclick="toggleDrawer(${gIdx}, this)">
+          <div class="batch-cell" style="font-weight:500">${c.handle}</div>
+          <div class="batch-cell dim">${c.fans}</div>
+          <div class="batch-cell dim">${c.er}</div>
+          <div class="batch-cell" style="font-family:'DM Mono',monospace;color:${scoreColor};font-weight:600">${parseFloat(r.score).toFixed(1)}</div>
+          <div class="batch-cell"><span class="priority-pill ${pClass}">${r.priority}优先级</span></div>
+          <div class="batch-cell dim" style="font-size:12px">${(c.niche||'').split('/')[0].trim()}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
 
-  // Animate score bars
-  setTimeout(()=>{
-    dims.forEach(([k,,val])=>{
-      const bar=document.getElementById('sb-'+k);
-      if(bar) bar.style.width=Math.round(parseFloat(val)*10)+'%';
-    });
-  },60);
+  // Re-inject drawer if a row is expanded
+  if (expandedRow !== null) {
+    renderDrawer(expandedRow);
+  }
 }
 
-function copyEmail(suffix,subject){
-  const bodyEl=g('email-body-'+suffix);
-  if(!bodyEl){alert('找不到邮件内容');return}
-  const text=(subject?'Subject: '+subject+'\n\n':'')+bodyEl.innerText;
-  navigator.clipboard.writeText(text)
-    .then(()=>{
-      // Brief button feedback
-      event.target.textContent='已复制 ✓';
-      setTimeout(()=>event.target.textContent='复制邮件',1500);
-    })
-    .catch(()=>alert('请手动选择文本复制'));
+function toggleDrawer(globalIdx, rowEl) {
+  if (expandedRow === globalIdx) {
+    expandedRow = null;
+    document.getElementById('batchDrawer').innerHTML = '';
+    document.querySelectorAll('.batch-row').forEach(r => r.classList.remove('expanded'));
+  } else {
+    expandedRow = globalIdx;
+    document.querySelectorAll('.batch-row').forEach(r => r.classList.remove('expanded'));
+    rowEl.classList.add('expanded');
+    renderDrawer(globalIdx);
+  }
 }
+
+function renderDrawer(idx) {
+  const item = batchResults[idx];
+  if (!item) return;
+  const r = item.result;
+  const c = item.creator;
+  const score = parseFloat(r.score);
+  const color = score >= 7 ? 'var(--green)' : score >= 5 ? 'var(--amber)' : 'var(--red)';
+  const circ = 2 * Math.PI * 22;
+  const dash = (score / 10) * circ;
+  const matchHTML = (r.match_tags || []).map(t => `<span class="stag match">${t}</span>`).join('');
+  const warnHTML  = (r.warn_tags  || []).map(t => `<span class="stag warn">${t}</span>`).join('');
+  const missHTML  = (r.miss_tags  || []).map(t => `<span class="stag miss">${t}</span>`).join('');
+  const analysisHTML = (r.analysis || '').split('\n\n').map(p => `<p>${p}</p>`).join('');
+  const drawerEl = document.getElementById('batchDrawer');
+  drawerEl.innerHTML = `
+    <div class="drawer-wrap">
+      <div style="padding:18px">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+          <svg width="54" height="54" viewBox="0 0 54 54">
+            <circle cx="27" cy="27" r="22" fill="none" stroke="var(--bg4)" stroke-width="5"/>
+            <circle cx="27" cy="27" r="22" fill="none" stroke="${color}" stroke-width="5"
+              stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}" stroke-linecap="round" transform="rotate(-90 27 27)"/>
+          </svg>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:2px">${c.handle}</div>
+            <div style="font-size:22px;font-weight:600;font-family:'DM Mono',monospace;color:${color};line-height:1">${score.toFixed(1)}<span style="font-size:12px;color:var(--text3)">/10</span></div>
+          </div>
+          <div style="flex:1"></div>
+          <button class="copy-btn" onclick="copyBatchEmail(${idx})">复制邮件</button>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">${matchHTML}${warnHTML}${missHTML}</div>
+        <div style="font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">合作分析</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:14px">${analysisHTML}</div>
+        <div style="font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">合作策略</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:14px">${r.strategy || ''}</div>
+        <div style="font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3);margin-bottom:6px">外联邮件</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:8px;font-family:'DM Mono',monospace">Subject: ${r.email_subject || ''}</div>
+        <div class="email-wrap" id="drawerEmail${idx}" style="font-size:12px">${(r.email_body || '').replace(/\n/g, '<br>')}</div>
+      </div>
+    </div>`;
+  drawerEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function copyBatchEmail(idx) {
+  const el = document.getElementById('drawerEmail' + idx);
+  if (!el) return;
+  navigator.clipboard.writeText(el.innerText).then(() => {
+    const btn = document.querySelector('.drawer-wrap .copy-btn');
+    if (btn) { btn.textContent = '已复制 ✓'; setTimeout(() => btn.textContent = '复制邮件', 2000); }
+  });
+}
+
+function renderHighEmailPanel() {
+  const highItems = batchResults
+    .filter(r => r.result.priority === '高')
+    .sort((a, b) => b.result.score - a.result.score);
+
+  const container = document.getElementById('highEmailCards');
+
+  if (!highItems.length) {
+    container.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:12px 0">本次分析未发现高优先级达人</div>';
+    return;
+  }
+
+  container.innerHTML = highItems.map((item, i) => {
+    const r = item.result;
+    const c = item.creator;
+    const gIdx = batchResults.indexOf(item);
+    const score = parseFloat(r.score);
+    const scoreColor = score >= 7 ? 'var(--green)' : 'var(--amber)';
+    const matchHTML = (r.match_tags || []).map(t => `<span class="stag match">${t}</span>`).join('');
+    const warnHTML  = (r.warn_tags  || []).map(t => `<span class="stag warn">${t}</span>`).join('');
+    const emailBody = (r.email_body || '').replace(/\n/g, '<br>');
+
+    return `<div class="email-card">
+      <div class="email-card-head">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <span style="font-weight:600;font-size:14px">${c.handle}</span>
+            <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;color:${scoreColor}">${score.toFixed(1)}/10</span>
+            <span class="priority-pill high">高优先级</span>
+          </div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap">${matchHTML}${warnHTML}</div>
+        </div>
+        <button class="copy-btn" onclick="copyHighEmail(${gIdx}, this)">复制邮件</button>
+      </div>
+      <div class="email-card-body">
+        <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:8px">
+          Subject: ${r.email_subject || ''}
+        </div>
+        <div class="email-wrap" id="highEmail${gIdx}" style="font-size:13px">${emailBody}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function copyHighEmail(idx, btn) {
+  const el = document.getElementById('highEmail' + idx);
+  if (!el) return;
+  navigator.clipboard.writeText(el.innerText).then(() => {
+    btn.textContent = '已复制 ✓';
+    setTimeout(() => btn.textContent = '复制邮件', 2000);
+  });
+}
+
+function copyAllHighEmails() {
+  const highItems = batchResults.filter(r => r.result.priority === '高').sort((a,b) => b.result.score - a.result.score);
+  const text = highItems.map(item => {
+    const r = item.result;
+    const c = item.creator;
+    return `=== ${c.handle} (${parseFloat(r.score).toFixed(1)}/10) ===\nSubject: ${r.email_subject}\n\n${r.email_body}\n`;
+  }).join('\n' + '─'.repeat(50) + '\n\n');
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('#highEmailPanel .btn-back');
+    if (btn) { btn.textContent = '已全部复制 ✓'; setTimeout(() => btn.textContent = '复制全部邮件', 2500); }
+  });
+}
+
+function exportCSV() {
+  if (!batchResults.length) return;
+  const headers = ['handle','fans','er','views','niche','score','priority','strategy','email_subject','email_body'];
+  const rows = batchResults.map(item => {
+    const c = item.creator, r = item.result;
+    return [c.handle, c.fans, c.er, c.views, c.niche, r.score, r.priority,
+      '"' + (r.strategy||'').replace(/"/g,'""') + '"',
+      '"' + (r.email_subject||'').replace(/"/g,'""') + '"',
+      '"' + (r.email_body||'').replace(/"/g,'""').replace(/\n/g,' ') + '"'
+    ].join(',');
+  });
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'creator_outreach_results.csv';
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function downloadTemplate() {
+  const template = `handle,fans_w,er,views_w,age,shop,niche,style,countries,interests
+@creatorname,85,4.8,120,25–34为主,已开通，有带货记录,护肤 / Skincare,真实测评型,"美国60%、英国15%、加拿大10%","护肤、美妆、生活方式"`;
+  const blob = new Blob([template], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'creator_template.csv';
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function resetBatch() {
+  batchResults = []; expandedRow = null; batchFilter = 'all';
+  document.getElementById('uploadZone').style.display = 'block';
+  document.getElementById('batchProgress').style.display = 'none';
+  document.getElementById('batchStats').style.display = 'none';
+  document.getElementById('batchToolbar').style.display = 'none';
+  document.getElementById('batchTable').innerHTML = '';
+  document.getElementById('batchDrawer').innerHTML = '';
+  document.getElementById('csvFileInput').value = '';
+  document.querySelectorAll('.filter-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+  document.getElementById('highEmailPanel').style.display = 'none';
+  document.getElementById('highEmailCards').innerHTML = '';
+}
+
+/* ── Init ── */
+selectPreset(0);
 </script>
 </body>
 </html>
